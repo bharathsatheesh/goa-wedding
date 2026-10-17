@@ -7,7 +7,7 @@
  */
 
 // ── Settings ───────────────────────────────────────────────────────────────
-const SITE_URL = 'https://bharathsatheesh.github.io/Goa-wedding/';
+const SITE_URL = 'https://bharathsatheesh.github.io/goa-wedding/';
 
 // Event ids must match CONFIG.events in index.html.
 const EVENTS = [

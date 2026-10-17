@@ -1,6 +1,6 @@
 # Anushri & Bharath · Goa wedding site
 
-A one-page site with personal RSVP links. Hosted free on GitHub Pages at https://bharathsatheesh.github.io/Goa-wedding/ (served from the `gh-pages` branch, so push changes to both `main` and `gh-pages`). Answers are saved to a Google Sheet.
+A one-page site with personal RSVP links. Hosted free on GitHub Pages at https://bharathsatheesh.github.io/goa-wedding/ (served from the `gh-pages` branch, so push changes to both `main` and `gh-pages`). Answers are saved to a Google Sheet.
 
 ```
 index.html          the whole site. Edit the CONFIG block near the bottom.
