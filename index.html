@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Anushri &amp; Bharath</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Join us in Goa, India · 30–31 March 2027. RSVP with your personal link.">
+<!-- Link preview for WhatsApp / iMessage. og:image and og:url must be full URLs:
+     they point at the GitHub Pages address. -->
+<meta property="og:title" content="Anushri &amp; Bharath · Goa, March 2027">
+<meta property="og:description" content="Join us in Goa, India · 30–31 March 2027. Tap to RSVP.">
+<meta property="og:image" content="https://bharathsatheesh.github.io/goa-wedding/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://bharathsatheesh.github.io/goa-wedding/">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1E6F6D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;600;700&display=swap">
+<style>
+/* Layout: one long invitation. A card-style hero, then alternating teal bands;
+   copy sits in a single left-aligned column; the RSVP is the only paper card. */
+:root {
+  --ground: #237F7D;        /* page teal, a shade deeper than the card for legible white text */
+  --ground-deep: #1E6F6D;   /* alternate band, nav */
+  --card-teal: #2E9896;     /* the save-the-date teal, used in artwork only */
+  --gold: #F0E064;          /* card yellow: headings, buttons */
+  --rose: #D1426F;          /* mandala pink: small markers */
+  --on-ground: #FFFFFF;
+  --on-ground-soft: #DCEDEC; /* only on --ground-deep */
+  --rule: rgba(255, 255, 255, 0.22);
+  --paper: #F7FBFA;
+  --ink: #0F3F3E;
+  --ink-soft: #4A6E6D;
+  --ink-rule: #D3E3E1;
+  --error: #A62C55;
+
+  --font-display: "Montserrat", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Gelasio", Georgia, "Times New Roman", serif;
+
+  --fs-body: 1.0625rem;
+  --fs-small: 0.9rem;
+  --fs-label: 0.8125rem;
+  --fs-title: 1.25rem;
+  --fs-h3: 1.5rem;
+  --column: 40rem;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--on-ground);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  overflow-x: clip;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--ground-deep);
+}
+img { max-width: 100%; display: block; }
+[hidden] { display: none !important; }
+a { color: inherit; text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- shared ---------- */
+.wrap {
+  max-width: calc(var(--column) + 2 * 24px);
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.band { padding-block: 64px; }
+.band-deep { background: var(--ground-deep); }
+.band-deep .soft { color: var(--on-ground-soft); }
+.section-title {
+  font-family: var(--font-display); font-weight: 700; font-size: var(--fs-title);
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
+  margin: 0 0 28px; text-wrap: balance;
+}
+h3 { font-family: var(--font-body); font-weight: 500; font-size: var(--fs-h3); line-height: 1.25; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.stack { display: grid; gap: 16px; }
+.label {
+  font-family: var(--font-display); font-weight: 600; font-size: var(--fs-label);
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 12px 24px; border: 0; border-radius: 999px;
+  background: var(--gold); color: var(--ink);
+  font-family: var(--font-display); font-weight: 700; font-size: 0.875rem;
+  letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.05); }
+.btn[disabled] { opacity: 0.6; cursor: progress; }
+
+/* ---------- nav ---------- */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--ground-deep); border-bottom: 1px solid var(--rule);
+}
+.nav ul {
+  list-style: none; margin: 0 auto; max-width: calc(var(--column) + 2 * 24px);
+  display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+  padding-block: 6px;
+  padding-left: max(10px, env(safe-area-inset-left, 0px));
+  padding-right: max(10px, env(safe-area-inset-right, 0px));
+}
+.nav ul::-webkit-scrollbar { display: none; }
+.nav a {
+  display: block; padding: 10px 8px; white-space: nowrap; text-decoration: none;
+  font-family: var(--font-display); font-weight: 600; font-size: 0.75rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-ground);
+}
+.nav a:hover { color: var(--gold); }
+
+/* ---------- hero ---------- */
+.hero { position: relative; overflow: hidden; background: var(--ground); text-align: center; }
+.hero .wrap { position: relative; z-index: 1; padding-block: 80px 72px; display: grid; justify-items: center; gap: 22px; }
+/* Like the card: a mandala peeks in from the top-right and bottom-left corners. */
+.mandala { --m: clamp(250px, 44vw, 520px); position: absolute; z-index: 0; pointer-events: none; width: var(--m); height: auto; }
+.mandala-tr { top: calc(var(--m) * -0.5); right: calc(var(--m) * -0.5); }
+.mandala-bl { bottom: calc(var(--m) * -0.5); left: calc(var(--m) * -0.5); }
+@media (max-width: 600px) {
+  .mandala { --m: 260px; }
+  .mandala-tr { top: -150px; right: -150px; }
+  .mandala-bl { bottom: -150px; left: -150px; }
+  .hero .wrap { padding-block: 124px 104px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mandala { animation: turn 240s linear infinite; }
+  .mandala-bl { animation-direction: reverse; }
+}
+@keyframes turn { to { transform: rotate(360deg); } }
+.eyebrow {
+  font-family: var(--font-display); font-weight: 700; font-size: 1.1875rem;
+  letter-spacing: 0.26em; text-transform: uppercase; color: var(--gold);
+}
+.names { margin: 0; width: min(100%, 640px); }
+.names img { width: 100%; height: auto; }
+.lede { font-size: 1.25rem; line-height: 1.55; max-width: 30ch; text-wrap: balance; }
+.when { font-family: var(--font-display); font-weight: 600; font-size: 0.875rem; letter-spacing: 0.16em; text-transform: uppercase; }
+.when span { white-space: nowrap; }
+
+/* ---------- rsvp card ---------- */
+.rsvp-card {
+  color-scheme: light;
+  background: var(--paper); color: var(--ink);
+  border-radius: 18px; padding: 28px 24px;
+  box-shadow: 0 18px 40px rgba(6, 40, 39, 0.28);
+  display: grid; gap: 22px;
+}
+.rsvp-card :focus-visible { outline-color: var(--ground); }
+.rsvp-card h3 { color: var(--ink); }
+.rsvp-card .muted { color: var(--ink-soft); font-size: var(--fs-small); }
+.rsvp-card .btn { background: var(--ground); color: var(--on-ground); justify-self: start; }
+.rsvp-card .btn.secondary { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink-rule); }
+.preview-note {
+  font-family: var(--font-display); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em;
+  color: var(--ink-soft); background: #E7F1F0; border-radius: 10px; padding: 10px 12px;
+}
+.guest { border: 0; margin: 0; padding: 20px 0 0; border-top: 1px solid var(--ink-rule); display: grid; gap: 14px; min-width: 0; }
+.guest:first-of-type { border-top: 0; padding-top: 0; }
+.guest legend { padding: 0; font-family: var(--font-body); font-size: 1.25rem; font-weight: 500; float: left; width: 100%; }
+.guest legend + * { clear: both; }
+.choices { display: flex; flex-wrap: wrap; gap: 10px; }
+.choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choice label {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 16px;
+  border-radius: 999px; cursor: pointer; user-select: none;
+  font-family: var(--font-display); font-weight: 600; font-size: 0.875rem;
+  background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink-rule);
+}
+.choice label::before {
+  content: ""; width: 14px; height: 14px; border-radius: 50%; flex: none;
+  box-shadow: inset 0 0 0 1.5px var(--ink-soft);
+}
+.choice.check label::before { border-radius: 4px; }
+.choice input:checked + label { background: var(--ground); color: var(--on-ground); box-shadow: none; }
+.choice input:checked + label::before { background: var(--gold); box-shadow: none; }
+.choice input:focus-visible + label { outline: 3px solid var(--ground); outline-offset: 2px; }
+.sub { display: grid; gap: 10px; }
+.field { display: grid; gap: 6px; }
+.field label { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-label); color: var(--ink); }
+.field input, .field textarea {
+  width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: #fff;
+  border: 1.5px solid var(--ink-rule); border-radius: 10px; padding: 10px 12px;
+}
+.field textarea { min-height: 96px; resize: vertical; }
+.field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--ground); outline-offset: 1px; border-color: transparent; }
+.error { color: var(--error); font-family: var(--font-display); font-weight: 600; font-size: var(--fs-small); }
+.summary { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.summary li { display: grid; gap: 2px; padding-bottom: 12px; border-bottom: 1px solid var(--ink-rule); }
+.summary li:last-child { border-bottom: 0; padding-bottom: 0; }
+.summary strong { font-weight: 500; font-size: 1.125rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.loading { display: flex; align-items: center; gap: 12px; color: var(--ink-soft); }
+.spinner { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid var(--ink-rule); border-top-color: var(--ground); animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.rsvp-by { margin-top: 18px; }
+
+/* ---------- events ---------- */
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.timeline li {
+  position: relative; display: grid; grid-template-columns: 7.5rem 1fr; gap: 6px 20px;
+  padding: 0 0 32px 22px; border-left: 1px solid var(--rule);
+}
+.timeline li:last-child { padding-bottom: 0; border-left-color: transparent; }
+.timeline li::before {
+  content: ""; position: absolute; left: -6px; top: 6px; width: 11px; height: 11px;
+  border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px var(--ground);
+}
+.when-col { display: grid; gap: 2px; padding-top: 2px; }
+.when-col .time { color: var(--gold); }
+.what-col { display: grid; gap: 6px; min-width: 0; }
+.dress { margin-top: 28px; }
+
+/* ---------- stay & travel ---------- */
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 12px; margin: 8px 0 0; }
+.fact { border-top: 1px solid var(--rule); padding-top: 10px; display: grid; gap: 2px; min-width: 0; }
+.fact dt { color: var(--gold); }
+.fact dd { margin: 0; }
+.airports { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 14px; }
+.airport { border: 1px solid var(--rule); border-radius: 14px; padding: 16px 18px; display: grid; gap: 4px; min-width: 0; }
+.airport .code { font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; letter-spacing: 0.08em; color: var(--gold); line-height: 1.1; }
+.airport .drive { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-label); letter-spacing: 0.1em; text-transform: uppercase; }
+.tips { display: grid; gap: 24px; margin-top: 32px; }
+.tip { display: grid; gap: 6px; }
+.tip h3 { font-size: 1.1875rem; }
+
+/* ---------- photos ---------- */
+.photos {
+  display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: var(--rule) transparent;
+  overscroll-behavior-x: contain;
+}
+.photos figure { margin: 0; flex: none; scroll-snap-align: start; display: grid; gap: 6px; }
+.photos img { height: clamp(240px, 55vw, 380px); width: auto; max-width: none; border-radius: 12px; object-fit: cover; background: var(--ground); }
+.photos figcaption { font-size: var(--fs-small); }
+.photos-wide { max-width: 1100px; }
+
+/* ---------- footer ---------- */
+footer { text-align: center; }
+footer .wrap { padding-block: 48px 56px; display: grid; justify-items: center; gap: 14px; }
+footer img { width: 72px; height: auto; }
+
+@media (min-width: 720px) {
+  .band { padding-block: 88px; }
+  .rsvp-card { padding: 36px 40px; }
+  .nav ul { justify-content: center; gap: 12px; }
+}
+@media (max-width: 420px) {
+  .timeline li { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero" id="top">
+  <img class="mandala mandala-tr" src="img/mandala.webp" alt="" width="718" height="714">
+  <img class="mandala mandala-bl" src="img/mandala.webp" alt="" width="718" height="714">
+  <div class="wrap">
+    <p class="eyebrow">Save the date</p>
+    <h1 class="names"><img src="img/names.png" alt="Anushri &amp; Bharath" width="1400" height="298"></h1>
+    <p class="lede">We're getting married in Goa, India, and we'd love you there. Your stay is on us.</p>
+    <p class="when"><span>30–31 March 2027</span> · <span>Morjim, North Goa</span></p>
+    <a class="btn" href="#rsvp">RSVP</a>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Sections">
+  <ul>
+    <li><a href="#rsvp">RSVP</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#stay">Stay</a></li>
+    <li><a href="#travel">Travel</a></li>
+    <li><a href="#us">Photos</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section class="band band-deep" id="rsvp" aria-labelledby="rsvp-title">
+    <div class="wrap">
+      <h2 class="section-title" id="rsvp-title">RSVP</h2>
+      <div class="rsvp-card" id="rsvp-card" aria-live="polite">
+        <h3>Your RSVP link is personal</h3>
+        <p>Open the link we sent you on WhatsApp or iMessage and your invitation will appear here.</p>
+      </div>
+      <p class="rsvp-by soft" id="rsvp-by"></p>
+    </div>
+  </section>
+
+  <section class="band" id="events" aria-labelledby="events-title">
+    <div class="wrap">
+      <h2 class="section-title" id="events-title">The celebrations</h2>
+      <ol class="timeline" id="timeline"></ol>
+      <p class="dress">We'll share what to wear for each event closer to the date.</p>
+    </div>
+  </section>
+
+  <section class="band band-deep" id="stay" aria-labelledby="stay-title">
+    <div class="wrap stack">
+      <h2 class="section-title" id="stay-title">Where we'll be</h2>
+      <h3>Praya Villas, Morjim</h3>
+      <p>Praya Villas is a set of fourteen Indo-Portuguese style villas right on Morjim Beach in North Goa. Morjim is one of Goa's quieter stretches of sand, and Olive Ridley sea turtles come ashore here to nest.</p>
+      <p>Your stay is on us. Everyone stays at Praya, and we'll send your villa and room details closer to the date. Coming early or staying on after? Tell us in your RSVP note and we'll help you find somewhere nearby.</p>
+      <dl class="facts">
+        <div class="fact"><dt class="label">Check in</dt><dd>Tue 30 March</dd></div>
+        <div class="fact"><dt class="label">Check out</dt><dd>Thu 1 April</dd></div>
+        <div class="fact"><dt class="label">Weather</dt><dd class="soft">Hot and mostly dry, highs around 32 °C (90 °F)</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="band" id="travel" aria-labelledby="travel-title">
+    <div class="wrap">
+      <h2 class="section-title" id="travel-title">Getting there</h2>
+      <p style="margin-bottom:20px">Fly into Goa. The state has two airports, and either works.</p>
+      <div class="airports">
+        <div class="airport">
+          <span class="code">GOX</span>
+          <strong>Mopa (Manohar International)</strong>
+          <span class="drive">About 45 min to Morjim · closest</span>
+        </div>
+        <div class="airport">
+          <span class="code">GOI</span>
+          <strong>Dabolim</strong>
+          <span class="drive">About 1 hr or more to Morjim</span>
+        </div>
+      </div>
+      <div class="tips">
+        <div class="tip">
+          <h3>Flying from abroad</h3>
+          <p>There are no flights from the US straight to Goa. Most people connect through Mumbai, Delhi or Bengaluru, or through the Gulf; a few Gulf cities, including Dubai, have direct flights to Goa.</p>
+        </div>
+        <div class="tip">
+          <h3>From the airport</h3>
+          <p>Take a prepaid taxi from the counter in arrivals, where the fare is fixed before you leave. GoaMiles, the state's taxi app, is the other reliable option. Uber and Ola run in Goa but can be hard to get at the airports.</p>
+        </div>
+        <div class="tip">
+          <h3>Visas</h3>
+          <p>Most people without an Indian passport or OCI card need an Indian e-Visa. Apply only on the official site, <a href="https://indianvisaonline.gov.in/evisa/" target="_blank" rel="noopener">indianvisaonline.gov.in</a>; look-alike sites charge extra.</p>
+        </div>
+        <div class="tip">
+          <h3>Time zone</h3>
+          <p>Goa runs on India Standard Time, UTC+5:30: nine and a half hours ahead of New York in late March.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-deep" id="us" aria-labelledby="us-title">
+    <div class="wrap photos-wide">
+      <h2 class="section-title" id="us-title">Us, so far</h2>
+      <div class="photos" id="photos" tabindex="0" aria-label="Photos of Anushri and Bharath"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="img/mandala.webp" alt="" width="718" height="714">
+    <p>Questions? Message Anushri or Bharath on WhatsApp.</p>
+  </div>
+</footer>
+
+<script>
+/* =====================================================================
+   EDIT HERE. Everything guests see that changes over time lives in CONFIG.
+   ===================================================================== */
+const CONFIG = {
+  // Paste your Apps Script web-app URL (it ends in /exec). Leave '' for preview mode.
+  apiUrl: '',
+  rsvpBy: '31 October 2026',
+  // Flip to true when you're ready to ask about food; guests reuse the same link.
+  askDietary: false,
+  // Event ids must match the EVENTS list in Code.gs.
+  events: [
+    { id: 'sangeet', name: 'Sangeet', day: 'Tue 30 March', time: 'Evening',
+      blurb: "A dance party. Dance, play music, or make fun of us 😉 We'll share how to join a performance soon." },
+    { id: 'kerala', name: 'Kerala ceremony', day: 'Wed 31 March', time: 'Time to come',
+      blurb: 'A traditional Kerala wedding ceremony.' },
+    { id: 'wedding', name: 'Wedding', day: 'Wed 31 March', time: 'Evening',
+      blurb: 'The North Indian wedding and the celebration after.' },
+  ],
+  // Add photos to the img folder and list them here. Captions are optional.
+  photos: [
+    { src: 'img/photo-1.jpg', w: 1600, h: 1200, alt: 'Anushri and Bharath at a dining hall table', caption: '' },
+    { src: 'img/photo-2.jpg', w: 1600, h: 1200, alt: 'Anushri and Bharath at a lookout above Waikiki and the Pacific', caption: '' },
+    { src: 'img/photo-3.jpg', w: 1200, h: 1600, alt: 'Anushri and Bharath in costume on a rainy Halloween night in New York', caption: '' },
+    { src: 'img/photo-4.jpg', w: 1600, h: 1200, alt: 'Anushri and Bharath in front of the painted Berlin Wall', caption: '' },
+    { src: 'img/photo-5.jpg', w: 1600, h: 1200, alt: 'Anushri and Bharath on a forest hiking trail', caption: '' },
+  ],
+};
+
+(function () {
+  'use strict';
+  const PREVIEW = !CONFIG.apiUrl;
+  const card = document.getElementById('rsvp-card');
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const firstName = (n) => String(n).trim().split(/\s+/)[0];
+  const joinNames = (list) => list.length <= 1 ? (list[0] || '') : list.slice(0, -1).join(', ') + ' & ' + list[list.length - 1];
+  const eventName = (id) => (CONFIG.events.find((e) => e.id === id) || {}).name || id;
+
+  let state = { code: null, guests: [], note: '' };
+
+  /* ---------- static sections ---------- */
+  document.getElementById('rsvp-by').textContent = 'Please RSVP by ' + CONFIG.rsvpBy + '.';
+  document.getElementById('timeline').innerHTML = CONFIG.events.map((e) => `
+    <li>
+      <div class="when-col"><span class="label">${esc(e.day)}</span><span class="label time">${esc(e.time)}</span></div>
+      <div class="what-col"><h3>${esc(e.name)}</h3><p>${esc(e.blurb)}</p></div>
+    </li>`).join('');
+  document.getElementById('photos').innerHTML = CONFIG.photos.map((p, i) => `
+    <figure>
+      <img src="${esc(p.src)}" alt="${esc(p.alt)}" width="${p.w}" height="${p.h}" ${i > 1 ? 'loading="lazy"' : ''} style="aspect-ratio:${p.w}/${p.h}">
+      ${p.caption ? `<figcaption class="soft">${esc(p.caption)}</figcaption>` : ''}
+    </figure>`).join('');
+
+  /* ---------- personal code ---------- */
+  function readCode() {
+    let code = null;
+    try { code = new URLSearchParams(location.search).get('g'); } catch (e) { /* ignore */ }
+    if (code) {
+      code = code.trim().toUpperCase();
+      try { localStorage.setItem('rsvp-code', code); } catch (e) { /* ignore */ }
+      return code;
+    }
+    try { return localStorage.getItem('rsvp-code'); } catch (e) { return null; }
+  }
+
+  /* ---------- talking to the Google Sheet ---------- */
+  async function call(method, payload) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 20000);
+    try {
+      const url = method === 'GET' ? CONFIG.apiUrl + '?code=' + encodeURIComponent(state.code) : CONFIG.apiUrl;
+      // A plain-text POST body keeps this a "simple" request, which Apps Script accepts cross-site.
+      const opts = method === 'GET' ? {} : { method: 'POST', body: JSON.stringify(payload) };
+      const res = await fetch(url, Object.assign(opts, { signal: ctrl.signal, redirect: 'follow' }));
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  /* ---------- views ---------- */
+  function previewNote() {
+    return PREVIEW ? '<p class="preview-note">Preview mode: answers aren\'t saved until the Google Sheet is connected.</p>' : '';
+  }
+
+  function showMessage(title, body, retry) {
+    card.innerHTML = `<h3>${esc(title)}</h3><p>${esc(body)}</p>` +
+      (retry ? '<div class="actions"><button class="btn" type="button" id="retry">Try again</button></div>' : '');
+    if (retry) document.getElementById('retry').addEventListener('click', retry);
+  }
+
+  function showLoading() {
+    card.innerHTML = '<div class="loading"><span class="spinner" aria-hidden="true"></span><span>Finding your invitation…</span></div>';
+  }
+
+  function showForm() {
+    const names = joinNames(state.guests.map((g) => firstName(g.name)));
+    const many = state.guests.length > 1;
+    const guestsHtml = state.guests.map((g, i) => {
+      const yes = g.attending === 'yes';
+      const events = CONFIG.events.map((e) => {
+        // New answers and earlier "can't make it" answers start with every event ticked.
+        const checked = !yes || (g.events && g.events[e.id]);
+        return `<span class="choice check"><input type="checkbox" id="g${i}-ev-${e.id}" data-event="${e.id}" ${checked ? 'checked' : ''}><label for="g${i}-ev-${e.id}">${esc(e.name)}</label></span>`;
+      }).join('');
+      const dietary = CONFIG.askDietary ? `
+        <div class="field"><label for="g${i}-diet">Dietary needs or allergies</label>
+          <input id="g${i}-diet" type="text" maxlength="200" value="${esc(g.dietary || '')}" placeholder="e.g. vegetarian, no nuts"></div>` : '';
+      return `
+      <fieldset class="guest" data-i="${i}">
+        <legend>${esc(g.name)}</legend>
+        <div class="choices" role="radiogroup" aria-label="Will ${esc(firstName(g.name))} be there?">
+          <span class="choice"><input type="radio" name="g${i}-att" id="g${i}-yes" value="yes" ${yes ? 'checked' : ''}><label for="g${i}-yes">${many ? 'Coming' : "I'll be there"}</label></span>
+          <span class="choice"><input type="radio" name="g${i}-att" id="g${i}-no" value="no" ${g.attending === 'no' ? 'checked' : ''}><label for="g${i}-no">Can't make it</label></span>
+        </div>
+        <div class="sub" id="g${i}-more" ${yes ? '' : 'hidden'}>
+          <p class="muted">Which events? Untick any you'll miss.</p>
+          <div class="choices">${events}</div>
+          <div class="choices"><span class="choice check"><input type="checkbox" id="g${i}-perform" ${g.perform ? 'checked' : ''}><label for="g${i}-perform">Count me in for a sangeet act</label></span></div>
+          ${dietary}
+        </div>
+      </fieldset>`;
+    }).join('');
+
+    card.innerHTML = `
+      ${previewNote()}
+      <div class="stack" style="gap:6px">
+        <h3>Hi ${esc(names)}!</h3>
+        <p class="muted">${many ? 'Let us know for each of you.' : 'Let us know if you can make it.'}</p>
+      </div>
+      <form id="rsvp-form" class="stack" style="gap:22px" novalidate>
+        ${guestsHtml}
+        <div class="field">
+          <label for="note">Anything else? (optional)</label>
+          <textarea id="note" maxlength="1000" placeholder="Arriving early, a song request, or a note to us">${esc(state.note)}</textarea>
+        </div>
+        <p class="error" id="form-error" hidden></p>
+        <div class="actions"><button class="btn" type="submit" id="send">Send RSVP</button></div>
+      </form>`;
+
+    state.guests.forEach((g, i) => {
+      card.querySelectorAll(`input[name="g${i}-att"]`).forEach((r) =>
+        r.addEventListener('change', () => { document.getElementById(`g${i}-more`).hidden = r.value !== 'yes' || !r.checked; }));
+    });
+    document.getElementById('rsvp-form').addEventListener('submit', onSubmit);
+  }
+
+  function showDone(justSent) {
+    const names = joinNames(state.guests.map((g) => firstName(g.name)));
+    const anyYes = state.guests.some((g) => g.attending === 'yes');
+    const items = state.guests.map((g) => {
+      let line;
+      if (g.attending === 'yes') {
+        const evs = CONFIG.events.filter((e) => g.events && g.events[e.id]).map((e) => e.name);
+        line = 'Coming to ' + (evs.length ? joinNames(evs) : 'the celebrations') + (g.perform ? ' · up for a sangeet act' : '');
+      } else {
+        line = "Can't make it";
+      }
+      return `<li><strong>${esc(g.name)}</strong><span class="muted">${esc(line)}</span></li>`;
+    }).join('');
+    card.innerHTML = `
+      ${previewNote()}
+      <h3>${justSent ? 'Thank you, ' + esc(names) + '!' : 'Your RSVP'}</h3>
+      <p>${anyYes ? "We can't wait to celebrate with you in Goa." : "We'll miss you, and we'll raise a glass to you in Goa."}</p>
+      <ul class="summary">${items}</ul>
+      <div class="actions"><button class="btn secondary" type="button" id="edit">Change answers</button></div>
+      <p class="muted">Plans change? Use this same link any time before ${esc(CONFIG.rsvpBy)}.</p>`;
+    document.getElementById('edit').addEventListener('click', () => { showForm(); card.querySelector('input')?.focus(); });
+  }
+
+  /* ---------- submit ---------- */
+  async function onSubmit(ev) {
+    ev.preventDefault();
+    const errorEl = document.getElementById('form-error');
+    errorEl.hidden = true;
+    const guests = [];
+    for (let i = 0; i < state.guests.length; i++) {
+      const g = state.guests[i];
+      const att = (card.querySelector(`input[name="g${i}-att"]:checked`) || {}).value || '';
+      if (!att) return fail(`Let us know whether ${firstName(g.name)} can come.`);
+      const events = {};
+      CONFIG.events.forEach((e) => { events[e.id] = att === 'yes' && document.getElementById(`g${i}-ev-${e.id}`).checked; });
+      if (att === 'yes' && !Object.values(events).some(Boolean)) return fail(`Pick at least one event for ${firstName(g.name)}.`);
+      const out = { name: g.name, attending: att, events, perform: att === 'yes' && document.getElementById(`g${i}-perform`).checked };
+      if (CONFIG.askDietary) out.dietary = att === 'yes' ? document.getElementById(`g${i}-diet`).value.trim() : '';
+      guests.push(out);
+    }
+    const note = document.getElementById('note').value.trim();
+    const btn = document.getElementById('send');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      if (PREVIEW) {
+        await new Promise((r) => setTimeout(r, 500));
+      } else {
+        const res = await call('POST', { code: state.code, guests, note });
+        if (!res || !res.ok) throw new Error((res && res.error) || 'not saved');
+      }
+      state.guests = state.guests.map((g, i) => Object.assign({}, g, guests[i]));
+      state.note = note;
+      showDone(true);
+      card.scrollIntoView({ block: 'nearest' });
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Send RSVP';
+      fail("We couldn't save that. Check your connection and try again. If it keeps failing, WhatsApp us your answer.");
+    }
+
+    function fail(msg) { errorEl.textContent = msg; errorEl.hidden = false; return undefined; }
+  }
+
+  /* ---------- start ---------- */
+  async function load() {
+    if (PREVIEW) {
+      state.code = 'PREVIEW';
+      state.guests = [
+        { name: 'Anushri', attending: '', events: {}, perform: false, dietary: '' },
+        { name: 'Bharath', attending: '', events: {}, perform: false, dietary: '' },
+      ];
+      showForm();
+      return;
+    }
+    state.code = readCode();
+    if (!state.code || !/^[A-Z0-9]{4,12}$/.test(state.code)) return; // keep the "link is personal" message
+    showLoading();
+    try {
+      const res = await call('GET');
+      if (!res.ok) {
+        try { localStorage.removeItem('rsvp-code'); } catch (e) { /* ignore */ }
+        return showMessage("We couldn't find that link", 'Check that you opened the full link from our message, or message Anushri or Bharath and we\'ll resend it.');
+      }
+      state.guests = res.guests;
+      state.note = res.note || '';
+      if (state.guests.every((g) => g.attending)) showDone(false); else showForm();
+    } catch (err) {
+      showMessage("We couldn't load your invitation", 'Check your connection and try again.', load);
+    }
+  }
+  load();
+})();
+</script>
+</body>
+</html>
