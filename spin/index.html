@@ -1115,6 +1115,8 @@ const CONFIG = {
   // In the artwork, section i's purple petal sits at -dir × i × 60°.
   const rotation = () => { const { base, dir } = geo(); return base + dir * p * STEP; };
 
+  // On laptops the envelope starts open (set before the first paint, so it doesn't animate).
+  if (!narrow.matches) desk.classList.add('open');
   let p = indexOf((location.hash || '').slice(1));
   let shown = -1, want = p, busy = false, anim = 0, focusAfter = false, popped = false, opener = null;
 
@@ -1266,9 +1268,15 @@ const CONFIG = {
       desk.classList.add('open');
       if (!first) { letter.classList.add('fade'); await wait(200); }
       swapTo(want); letter.classList.remove('tucked', 'fade');
+    } else if (first && !narrow.matches) {
+      // Laptop: the envelope is already open, and the letter rises straight away.
+      desk.classList.add('open');
+      swapTo(want); void letter.offsetWidth;
+      letter.classList.remove('tucked');
+      await wait(660);
     } else if (first) {
       await wait(450);
-      desk.classList.add('open');           // seal fades, flap opens
+      desk.classList.add('open');           // phone: seal fades, flap opens
       await wait(650);
       swapTo(want); void letter.offsetWidth;
       letter.classList.remove('tucked');    // the letter rises out
