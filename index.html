@@ -69,6 +69,11 @@ body::before {
   z-index: 10; background: var(--ground);
 }
 img { max-width: 100%; display: block; }
+/* A little Olive Ridley turtle for a mouse pointer (laptops and desktops only). */
+@media (hover: hover) and (pointer: fine) {
+  html, a, button, label, summary { cursor: url(img/turtle-32.png) 5 3, auto; }
+  input, textarea { cursor: text; }
+}
 [hidden] { display: none !important; }
 a { color: inherit; text-underline-offset: 3px; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
@@ -135,19 +140,33 @@ p { margin: 0; }
 .hero .wrap { position: relative; z-index: 1; padding-block: 56px 72px; display: grid; justify-items: center; gap: 22px; }
 /* Like the card: a mandala peeks in from the top-right and bottom-left corners. */
 .mandala { --m: clamp(250px, 44vw, 520px); position: absolute; z-index: 0; pointer-events: none; width: var(--m); height: auto; }
-.mandala-tr { top: calc(var(--m) * -0.5); right: calc(var(--m) * -0.5); }
-.mandala-bl { bottom: calc(var(--m) * -0.5); left: calc(var(--m) * -0.5); }
+.mandala-tr { top: calc(var(--m) * -0.3); right: calc(var(--m) * -0.3); }
+.mandala-bl { bottom: calc(var(--m) * -0.3); left: calc(var(--m) * -0.3); }
 @media (max-width: 600px) {
-  .mandala { --m: 260px; }
-  .mandala-tr { top: -150px; right: -150px; }
-  .mandala-bl { bottom: -150px; left: -150px; }
-  .hero .wrap { padding-block: 96px 104px; }
+  .mandala { --m: 230px; }
+  .mandala-tr { top: -92px; right: -92px; }
+  .mandala-bl { bottom: -92px; left: -92px; }
+  .hero .wrap { padding-block: 150px 150px; }
 }
+/* The same mandala, faint, drifting through the rest of the page. */
+.band { position: relative; overflow: clip; }
+.band > .wrap { position: relative; z-index: 1; }
+.band::before {
+  content: ""; position: absolute; z-index: 0; pointer-events: none;
+  width: clamp(220px, 34vw, 420px); aspect-ratio: 1;
+  background: url(img/mandala.webp) center / contain no-repeat; opacity: 0.13;
+}
+.band.m-right::before { top: -70px; right: -90px; }
+.band.m-left::before { bottom: -80px; left: -100px; }
 @media (prefers-reduced-motion: no-preference) {
   .mandala { animation: turn 240s linear infinite; }
   .mandala-bl { animation-direction: reverse; }
 }
 @keyframes turn { to { transform: rotate(360deg); } }
+/* Sections and headings rise and fade in as they scroll into view (JS adds .reveal). */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1); }
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 .eyebrow {
   font-family: var(--font-head); font-weight: 700; font-size: 1.1875rem;
   letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
@@ -236,7 +255,6 @@ p { margin: 0; }
 .dress-code { font-size: var(--fs-small); }
 .dress-code .label { color: var(--gold); margin-right: 6px; }
 .outfits { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--rule); }
-.shops { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .shops a { font-weight: 600; color: var(--on-ground); text-decoration-color: var(--gold); text-decoration-thickness: 2px; }
 .shops a:hover { color: var(--gold); }
 
@@ -266,6 +284,11 @@ p { margin: 0; }
 .photos img { height: clamp(240px, 55vw, 380px); width: auto; max-width: none; border-radius: 12px; object-fit: cover; background: var(--ground); }
 .photos figcaption { font-size: var(--fs-small); }
 .photos-wide { max-width: 1100px; }
+
+/* ---------- celebration rain ---------- */
+.rain { position: fixed; inset: 0; z-index: 50; pointer-events: none; overflow: hidden; }
+.rain img { position: absolute; top: -60px; width: var(--size); height: auto; animation: fall var(--dur) cubic-bezier(.3,.1,.6,1) var(--delay) forwards; }
+@keyframes fall { to { transform: translate3d(var(--drift), 115vh, 0) rotate(var(--spin)); } }
 
 /* ---------- footer ---------- */
 footer { text-align: center; }
@@ -307,7 +330,7 @@ footer img { width: 72px; height: auto; }
 </header>
 
 <main>
-  <section class="band band-deep" id="rsvp" aria-labelledby="rsvp-title">
+  <section class="band m-right band-deep" id="rsvp" aria-labelledby="rsvp-title">
     <div class="wrap">
       <h2 class="section-title" id="rsvp-title">RSVP</h2>
       <div class="rsvp-card" id="rsvp-card" aria-live="polite">
@@ -322,25 +345,18 @@ footer img { width: 72px; height: auto; }
     </div>
   </section>
 
-  <section class="band" id="events" aria-labelledby="events-title">
+  <section class="band m-left" id="events" aria-labelledby="events-title">
     <div class="wrap">
       <h2 class="section-title" id="events-title">The celebrations</h2>
       <ol class="timeline" id="timeline"></ol>
       <div class="outfits stack">
         <h3>Outfit inspiration</h3>
-        <p>For the sangeet, go Indian festive: colour, sparkle, and shoes you can dance in. Everything else is semi-formal.</p>
-        <ul class="shops">
-          <li><a href="https://www.pinterest.com/pin/502010689731274650/" target="_blank" rel="noopener">Pinterest: Indian festive inspiration</a></li>
-          <li><a href="https://www.lashkaraa.com/" target="_blank" rel="noopener">Lashkaraa</a><span class="soft"> · US-based</span></li>
-          <li><a href="https://www.kalkifashion.com/" target="_blank" rel="noopener">Kalki Fashion</a></li>
-          <li><a href="https://www.azafashions.com/" target="_blank" rel="noopener">Aza Fashions</a><span class="soft"> · designer, ships to the US</span></li>
-          <li><a href="https://www.manyavar.com/" target="_blank" rel="noopener">Manyavar</a><span class="soft"> · menswear</span></li>
-        </ul>
+        <p class="shops">For the sangeet, go <a href="https://www.pinterest.com/pin/502010689731274650/" target="_blank" rel="noopener">Indian festive</a>: colour, sparkle, and shoes you can dance in. Everything else is semi-formal. For outfits, try <a href="https://www.lashkaraa.com/" target="_blank" rel="noopener">Lashkaraa</a> (US-based), <a href="https://www.azafashions.com/" target="_blank" rel="noopener">Aza Fashions</a> (designer, ships to the US) or <a href="https://www.manyavar.com/" target="_blank" rel="noopener">Manyavar</a> for menswear.</p>
       </div>
     </div>
   </section>
 
-  <section class="band band-deep" id="stay" aria-labelledby="stay-title">
+  <section class="band m-right band-deep" id="stay" aria-labelledby="stay-title">
     <div class="wrap stack">
       <h2 class="section-title" id="stay-title">Where we'll be</h2>
       <h3>Praya Villas, Morjim</h3>
@@ -354,7 +370,7 @@ footer img { width: 72px; height: auto; }
     </div>
   </section>
 
-  <section class="band" id="travel" aria-labelledby="travel-title">
+  <section class="band m-left" id="travel" aria-labelledby="travel-title">
     <div class="wrap">
       <h2 class="section-title" id="travel-title">Getting there</h2>
       <p style="margin-bottom:20px">Fly into Goa. The state has two airports, and either works.</p>
@@ -377,7 +393,7 @@ footer img { width: 72px; height: auto; }
         </div>
         <div class="tip">
           <h3>Visas</h3>
-          <p>Most people without an Indian passport or OCI card need an Indian e-Visa. Apply only on the official site, <a href="https://indianvisaonline.gov.in/evisa/" target="_blank" rel="noopener">indianvisaonline.gov.in</a>; look-alike sites charge extra.</p>
+          <p>Most people without an Indian passport or OCI card need an Indian e-Visa from the official site, <a href="https://indianvisaonline.gov.in/evisa/" target="_blank" rel="noopener">indianvisaonline.gov.in</a>. Apply four to six weeks before you fly, around mid-February. The official minimum is four days, but give yourself time to fix any problems. Your passport needs to be valid for at least six months after you arrive.</p>
         </div>
         <div class="tip">
           <h3>Worth a detour</h3>
@@ -408,7 +424,7 @@ footer img { width: 72px; height: auto; }
     </div>
   </section>
 
-  <section class="band band-deep" id="us" aria-labelledby="us-title">
+  <section class="band m-right band-deep" id="us" aria-labelledby="us-title">
     <div class="wrap photos-wide">
       <h2 class="section-title" id="us-title">Us, so far</h2>
       <div class="photos" id="photos" tabindex="0" aria-label="Photos of Anushri and Bharath"></div>
@@ -419,7 +435,7 @@ footer img { width: 72px; height: auto; }
 <footer>
   <div class="wrap">
     <img src="img/mandala.webp" alt="" width="718" height="714">
-    <p>Questions? Message Anushri or Bharath on WhatsApp.</p>
+    <p>Stay tuned for song requests and how to get involved in our sangeet 😉</p>
   </div>
 </footer>
 
@@ -439,7 +455,7 @@ const CONFIG = {
       blurb: "A dance party. Dance, play music, or make fun of us 😉 We'll share how to join a performance soon.",
       dress: 'Indian festive',
       photo: 'https://images.unsplash.com/photo-1763184176470-2115508594d3?w=900&q=70&auto=format&fit=crop', alt: 'Colourful garlands and decorations at a market' },
-    { id: 'kerala', name: 'Kerala ceremony', day: 'Wed 31 March', time: 'Time to come',
+    { id: 'kerala', name: 'Kerala ceremony', day: 'Wed 31 March', time: 'Morning',
       blurb: 'A traditional Kerala wedding ceremony.', dress: 'Semi-formal',
       photo: 'https://images.unsplash.com/photo-1780247584867-d332ed89d423?w=900&q=70&auto=format&fit=crop', alt: 'Strings of white jasmine flowers' },
     { id: 'wedding', name: 'Wedding', day: 'Wed 31 March', time: 'Evening',
@@ -482,6 +498,43 @@ const CONFIG = {
     return out;
   }
   const allEvents = () => Object.fromEntries(CONFIG.events.map((e) => [e.id, true]));
+
+  // Little outfits for the celebration rain (simple drawings in the card's colours).
+  const OUTFITS = [
+    // lehenga
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M14 4h12l2 7H12z" fill="#D1426F"/><path d="M14 11h12l10 25H4z" fill="#F0E064"/><path d="M5.6 32h28.8l1.6 4H4z" fill="#D1426F"/><circle cx="14" cy="22" r="1.4" fill="#D1426F"/><circle cx="20" cy="26" r="1.4" fill="#D1426F"/><circle cx="26" cy="22" r="1.4" fill="#D1426F"/></svg>',
+    // kurta
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M13 4l4-1 3 3 3-3 4 1 7 9-4 3-3-4v24H13V12l-3 4-4-3z" fill="#2E9896" stroke="#0F3F3E" stroke-width="1.2"/><path d="M20 6v10" stroke="#F0E064" stroke-width="1.6"/><circle cx="20" cy="9" r="1" fill="#F0E064"/><circle cx="20" cy="13" r="1" fill="#F0E064"/><path d="M13 32h14" stroke="#F0E064" stroke-width="2"/></svg>',
+    // sari
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M12 6h16l4 30H8z" fill="#D1426F"/><path d="M12 6l20 30h-7L12 17z" fill="#F0E064"/><path d="M8.6 32h22.8l.6 4H8z" fill="#F0E064"/></svg>',
+    // jhumka earring
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="7" r="4" fill="#F0E064" stroke="#0F3F3E" stroke-width="1"/><path d="M20 11v4" stroke="#0F3F3E" stroke-width="1.2"/><path d="M9 28a11 11 0 0 1 22 0z" fill="#F0E064" stroke="#0F3F3E" stroke-width="1"/><circle cx="12" cy="31" r="1.6" fill="#D1426F"/><circle cx="17" cy="32" r="1.6" fill="#D1426F"/><circle cx="23" cy="32" r="1.6" fill="#D1426F"/><circle cx="28" cy="31" r="1.6" fill="#D1426F"/></svg>',
+    // jutti shoe
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M4 26c0-5 6-8 12-8 4 0 6 3 10 3 5 0 8-6 10-4 1 2-3 9-10 11-8 2-22 2-22-2z" fill="#F0E064" stroke="#0F3F3E" stroke-width="1.2"/><path d="M8 22c3-2 6-3 9-2" stroke="#D1426F" stroke-width="2" fill="none"/><circle cx="22" cy="25" r="1.6" fill="#D1426F"/></svg>',
+  ].map((svg) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
+
+  function celebrate() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const rain = document.createElement('div');
+    rain.className = 'rain';
+    rain.setAttribute('aria-hidden', 'true');
+    const n = window.innerWidth < 600 ? 40 : 70;
+    for (let i = 0; i < n; i++) {
+      const img = document.createElement('img');
+      img.src = OUTFITS[i % OUTFITS.length];
+      img.alt = '';
+      img.style.left = (Math.random() * 100) + 'vw';
+      img.style.setProperty('--size', (22 + Math.random() * 22) + 'px');
+      img.style.setProperty('--dur', (2.6 + Math.random() * 2) + 's');
+      img.style.setProperty('--delay', (Math.random() * 1.4) + 's');
+      img.style.setProperty('--drift', ((Math.random() - 0.5) * 30) + 'vw');
+      img.style.setProperty('--spin', ((Math.random() - 0.5) * 720) + 'deg');
+      rain.appendChild(img);
+    }
+    document.body.appendChild(rain);
+    setTimeout(() => rain.remove(), 6500);
+  }
+
 
   /* ---------- static sections ---------- */
   document.getElementById('rsvp-by').textContent = 'Please RSVP by ' + CONFIG.rsvpBy + '.';
@@ -651,6 +704,7 @@ const CONFIG = {
       state.note = note;
       state.accom = accom;
       showDone(true);
+      if (guests.some((x) => x.attending === 'yes')) celebrate();
       card.scrollIntoView({ block: 'nearest' });
     } catch (err) {
       btn.disabled = false; btn.textContent = 'Send RSVP';
@@ -690,6 +744,20 @@ const CONFIG = {
     }
   }
   load();
+
+  // Fade sections and headings in from below as they arrive.
+  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const targets = [];
+    document.querySelectorAll('.hero .wrap > *').forEach((el, i) => { el.classList.add('reveal'); el.style.transitionDelay = (i * 120) + 'ms'; targets.push(el); });
+    document.querySelectorAll('main .band .wrap > *, footer .wrap > *').forEach((el) => {
+      const kids = el.matches('.timeline, .tips, .airports') ? [...el.children] : [el];
+      kids.forEach((k, i) => { k.classList.add('reveal'); k.style.transitionDelay = Math.min(i * 90, 360) + 'ms'; targets.push(k); });
+    });
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+    }), { rootMargin: '0px 0px -6% 0px', threshold: 0.08 });
+    targets.forEach((t) => io.observe(t));
+  }
 
   const nav = document.querySelector('.nav');
   const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
