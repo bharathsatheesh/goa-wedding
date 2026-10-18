@@ -226,8 +226,17 @@ p { margin: 0; }
 .sub { display: grid; gap: 16px; }
 .field { display: grid; gap: 6px; }
 .field label, .field-label { font-family: var(--font-text); font-weight: 600; font-size: var(--fs-label); color: var(--ink); }
-.diet { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
-.diet legend { padding: 0; margin-bottom: 8px; }
+.group { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.group legend { padding: 0; margin-bottom: 8px; }
+.add-diet {
+  justify-self: start; border: 0; background: none; padding: 6px 0; cursor: pointer;
+  font-family: var(--font-text); font-weight: 600; font-size: var(--fs-label); color: var(--ground-deep);
+  text-decoration: underline; text-decoration-color: var(--ink-rule); text-decoration-thickness: 2px; text-underline-offset: 5px;
+}
+.add-diet:hover { text-decoration-color: var(--ground); }
+/* A picked pill gives a little wiggle. */
+@keyframes wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-4deg); } 40% { transform: rotate(3.5deg); } 60% { transform: rotate(-2deg); } 80% { transform: rotate(1deg); } }
+@media (prefers-reduced-motion: no-preference) { .choice label.wiggle { animation: wiggle .5s ease; } }
 .req { color: var(--error); font-weight: 700; }
 .field input, .field textarea {
   width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: #fff;
@@ -732,10 +741,20 @@ const CONFIG = {
     const guestsHtml = state.guests.map((g, i) => {
       const yes = g.attending === 'yes';
       const picked = splitDiet(g.dietary).picked;
+      const hasDiet = !!String(g.dietary || '').trim();
       const dietary = CONFIG.askDietary ? `
-        <fieldset class="diet"><legend class="field-label">Dietary preferences</legend>
+        <button class="add-diet" type="button" id="g${i}-diet-toggle" aria-expanded="false" aria-controls="g${i}-diet" ${hasDiet ? 'hidden' : ''}>+ Add dietary preferences</button>
+        <fieldset class="group diet" id="g${i}-diet" ${hasDiet ? '' : 'hidden'}><legend class="field-label">Dietary preferences</legend>
           <div class="choices">${CONFIG.diets.map((d, k) => `<span class="choice check"><input type="checkbox" id="g${i}-d${k}" value="${esc(d)}" ${picked.includes(d) ? 'checked' : ''}><label for="g${i}-d${k}">${esc(d)}</label></span>`).join('')}</div>
         </fieldset>` : '';
+      // Anyone who has already said yes has answered the sangeet question too.
+      const sangeet = `
+        <fieldset class="group"><legend class="field-label">Sangeet <span class="req" aria-hidden="true">*</span></legend>
+          <div class="choices" role="radiogroup" aria-label="Will ${esc(firstName(g.name))} join a sangeet act?">
+            <span class="choice"><input type="radio" name="g${i}-perf" id="g${i}-perf-yes" value="yes" ${g.perform ? 'checked' : ''}><label for="g${i}-perf-yes">Count me in for an act</label></span>
+            <span class="choice"><input type="radio" name="g${i}-perf" id="g${i}-perf-no" value="no" ${!g.perform && g.attending === 'yes' ? 'checked' : ''}><label for="g${i}-perf-no">I'll cheer from the crowd</label></span>
+          </div>
+        </fieldset>`;
       const email = `
         <div class="field"><label for="g${i}-email">Email <span class="req" aria-hidden="true">*</span></label>
           <input id="g${i}-email" type="email" required autocomplete="${i === 0 ? 'email' : 'off'}" maxlength="200" value="${esc(g.email || '')}" placeholder="For updates closer to the date"></div>`;
@@ -748,8 +767,8 @@ const CONFIG = {
         </div>
         <div class="sub" id="g${i}-more" ${yes ? '' : 'hidden'}>
           ${email}
+          ${sangeet}
           ${dietary}
-          <div class="choices"><span class="choice check"><input type="checkbox" id="g${i}-perform" ${g.perform ? 'checked' : ''}><label for="g${i}-perform">Count me in for a sangeet act</label></span></div>
         </div>
       </fieldset>`;
     }).join('');
@@ -774,8 +793,19 @@ const CONFIG = {
       card.querySelectorAll(`input[name="g${i}-att"]`).forEach((r) =>
         r.addEventListener('change', () => { document.getElementById(`g${i}-more`).hidden = r.value !== 'yes' || !r.checked; }));
     });
+    card.querySelectorAll('.add-diet').forEach((b) => b.addEventListener('click', () => {
+      const box = document.getElementById(b.getAttribute('aria-controls'));
+      box.hidden = false; b.hidden = true;
+      box.querySelector('input')?.focus();
+    }));
     document.getElementById('rsvp-form').addEventListener('submit', onSubmit);
   }
+  card.addEventListener('change', (e) => {
+    if (!e.target.matches('.choice input') || !e.target.checked) return;
+    const l = e.target.nextElementSibling;
+    l.classList.remove('wiggle'); void l.offsetWidth; l.classList.add('wiggle');
+  });
+  card.addEventListener('animationend', (e) => e.target.classList.remove('wiggle'));
 
   function showDone(justSent) {
     const names = joinNames(state.guests.map((g) => firstName(g.name)));
@@ -812,7 +842,8 @@ const CONFIG = {
       if (!att) return fail(`Let us know whether ${firstName(g.name)} can come.`);
       // One overall answer: coming means coming to everything.
       const events = att === 'yes' ? allEvents() : {};
-      const out = { name: g.name, attending: att, events, perform: att === 'yes' && document.getElementById(`g${i}-perform`).checked };
+      const perf = (card.querySelector(`input[name="g${i}-perf"]:checked`) || {}).value || '';
+      const out = { name: g.name, attending: att, events, perform: att === 'yes' && perf === 'yes' };
       if (CONFIG.askDietary) {
         const ticked = CONFIG.diets.filter((d, k) => document.getElementById(`g${i}-d${k}`).checked);
         out.dietary = att === 'yes' ? ticked.concat(splitDiet(g.dietary).other).join(', ') : '';
@@ -821,6 +852,7 @@ const CONFIG = {
       out.email = att === 'yes' ? emailEl.value.trim() : (g.email || '');
       if (att === 'yes' && !out.email) return fail(`Add an email for ${firstName(g.name)} so we can send updates.`);
       if (out.email && !emailEl.checkValidity()) return fail(`That email for ${firstName(g.name)} doesn't look right.`);
+      if (att === 'yes' && !perf) return fail(`Let us know if ${firstName(g.name)} would like to be in a sangeet act.`);
       guests.push(out);
     }
     const note = document.getElementById('note').value.trim();

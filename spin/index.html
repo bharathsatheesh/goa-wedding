@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Anushri &amp; Bharath</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#BDD9D8">
+<meta name="theme-color" content="#F9EBCB">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gelasio:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap">
@@ -131,8 +131,17 @@ p { margin: 0; }
 .sub { display: grid; gap: 16px; }
 .field { display: grid; gap: 6px; }
 .field label, .field-label { font-family: var(--font-text); font-weight: 600; font-size: var(--fs-label); color: var(--ink); }
-.diet { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
-.diet legend { padding: 0; margin-bottom: 8px; }
+.group { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.group legend { padding: 0; margin-bottom: 8px; }
+.add-diet {
+  justify-self: start; border: 0; background: none; padding: 6px 0; cursor: pointer;
+  font-family: var(--font-text); font-weight: 600; font-size: var(--fs-label); color: var(--ground-deep);
+  text-decoration: underline; text-decoration-color: var(--ink-rule); text-decoration-thickness: 2px; text-underline-offset: 5px;
+}
+.add-diet:hover { text-decoration-color: var(--ground); }
+/* A picked pill gives a little wiggle. */
+@keyframes wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-4deg); } 40% { transform: rotate(3.5deg); } 60% { transform: rotate(-2deg); } 80% { transform: rotate(1deg); } }
+@media (prefers-reduced-motion: no-preference) { .choice label.wiggle { animation: wiggle .5s ease; } }
 .req { color: var(--error); font-weight: 700; }
 .field input, .field textarea {
   width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: #fff;
@@ -263,28 +272,31 @@ p { margin: 0; }
    ===================================================================== */
 :root {
   --nav-h: 52px;
-  --pale: #BDD9D8;              /* the page teal at 30%, so the mandala, envelope and letter stand out */
+  --cream: #F6E3BC;             /* warm gold bokeh behind everything */
+  --paper: #FFFDF8;
   --purple: #6B2A8C;
-  --D: min(76vh, 620px, 50vw);  /* mandala size */
-  --env-w: min(600px, 44vw);
+  --D: 540px;                   /* laptop: fixed sizes, so the letter stays to scale with the mandala */
+  --env-w: 440px;
+  --desk-h: 560px;
   --env-inset: 0px;             /* envelope inset within the desk */
   --letter-inset: 20px;         /* letter inset within the envelope */
   --lt: 40px;                   /* letter top padding */
-  --env-h: clamp(120px, 23vh, 200px);
-  --env-b: 32px;
+  --env-h: 150px;
+  --env-b: 0px;
   --rose-deep: #A9325A;
   --liner: #F0E064;
 }
 html, body { height: 100%; }
-body { overflow: hidden; overscroll-behavior: none; background: var(--pale); color: var(--ink); }
-body::before { background: var(--pale); }
+body { overflow: hidden; overscroll-behavior: none; background: var(--cream) url(../img/bokeh.webp) center / cover no-repeat; color: var(--ink); }
+body::before { background: #F9EBCB; }
 
 .nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); z-index: 20; }
 .nav ul {
   list-style: none; margin: 0 auto; height: 100%; display: flex; align-items: center; gap: 2px;
   padding: 0 max(10px, env(safe-area-inset-right, 0px)) 0 max(10px, env(safe-area-inset-left, 0px));
 }
-.nav li:first-child { margin-left: auto; }
+.nav ul { justify-content: flex-end; }
+@media (max-width: 599px) { .nav-home { display: none; } }
 .nav a {
   display: block; padding: 10px 8px; white-space: nowrap; text-decoration: none;
   font-family: var(--font-text); font-weight: 600; font-size: 0.75rem;
@@ -297,20 +309,19 @@ body::before { background: var(--pale); }
 
 .stage { position: fixed; inset: var(--nav-h) 0 0 0; }
 /* Laptop: half the mandala peeks out from behind the envelope, and the pair sits centred. */
-.comp { position: absolute; top: 0; bottom: 0; left: 50%; width: calc(var(--D) * .64 + var(--env-w)); translate: -50% 0; }
+.comp { position: absolute; top: 50%; left: 50%; height: var(--desk-h); width: calc(var(--D) * .64 + var(--env-w)); translate: -50% -50%; scale: var(--fit, 1); }
 
 /* ---------- the dial ---------- */
-.dial-wrap { position: absolute; z-index: 1; left: 0; top: 50%; width: var(--D); height: var(--D); translate: 0 -50%; touch-action: none; user-select: none; -webkit-user-select: none; }
+.dial-wrap { position: absolute; z-index: 1; left: 0; top: calc(50% - var(--D) / 2); width: var(--D); height: var(--D); touch-action: none; user-select: none; -webkit-user-select: none; }
 .dial { position: relative; width: 100%; height: 100%; border-radius: 50%; }
 .dial:focus-visible { outline: 3px solid var(--ground-deep); outline-offset: 6px; }
 .dial-wobble, .dial-rot { position: absolute; inset: 0; }
 .dial-rot { will-change: transform; }
 .dial-rot img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; -webkit-user-drag: none; }
-/* "Spin" sits in the middle of the mandala. */
+/* "Spin" sits just left of the pointer. */
 .spin-word {
-  position: absolute; z-index: 2; left: 50%; top: 50%; translate: -50% -54%; pointer-events: none;
-  font-family: var(--font-head); font-style: italic; font-size: clamp(1rem, calc(var(--D) * .034), 1.375rem);
-  color: #fff; text-shadow: 0 1px 3px rgba(6, 40, 39, .55);
+  position: absolute; z-index: 2; right: calc(100% + 38px); top: 50%; translate: 0 -54%; pointer-events: none; white-space: nowrap;
+  font-family: var(--font-head); font-style: italic; font-size: 1rem; color: var(--ink);
 }
 /* The pointer: the purple petal it touches is the section you're on. */
 .pointer {
@@ -445,6 +456,15 @@ body::before { background: var(--pale); }
 .sec-home .lede { max-width: 30rem; }
 .sec-home .when { color: var(--ink-soft); }
 
+/* Laptop: the letter is a fixed size, so the save-the-date letter is a little more compact. */
+@media (min-width: 900px) {
+  .sec-home { gap: 10px; align-content: start; }
+  .sec-home .hero-clip { width: 100px; }
+  .sec-home .names { width: min(100%, 300px); margin: 0; }
+  .sec-home .lede { font-size: 0.9375rem; line-height: 1.5; }
+  .sec-home .eyebrow { font-size: 1rem; }
+}
+
 /* Section titles arrive letter by letter as the letter rises. */
 .split .w { display: inline-block; white-space: nowrap; }
 .split .ch { display: inline-block; opacity: 0; transform: translateY(.8em) rotate(8deg); transition: opacity .5s ease, transform .7s cubic-bezier(.16,.8,.24,1); transition-delay: calc(240ms + var(--i) * 40ms); }
@@ -458,12 +478,16 @@ body::before { background: var(--pale); }
 /* ---------- phones: the mandala becomes a half-dial along the bottom ---------- */
 @media (max-width: 899px) {
   :root { --nav-h: 46px; --env-h: 96px; --env-b: 0px; --env-inset: 10px; --letter-inset: 8px; --lt: 30px; --D: 320px; }
-  .comp { left: 0; right: 0; width: auto; translate: none; display: grid; grid-template-rows: minmax(0, 1fr) 172px; }
+  .comp { top: 0; bottom: 0; left: 0; right: 0; height: auto; width: auto; translate: none; scale: none; display: grid; grid-template-rows: minmax(0, 1fr) 172px; }
   .desk { position: relative; grid-row: 1; width: auto; top: auto; bottom: auto; right: auto; }
   .dial-wrap { position: relative; grid-row: 2; left: auto; top: auto; width: auto; height: auto; translate: none; overflow: hidden; display: grid; justify-items: center; align-items: start; }
   .dial { width: var(--D); height: var(--D); margin-top: 8px; }
   .pointer { top: -4px; left: 50%; translate: -50% 0; border: 0; border-inline: 10px solid transparent; border-bottom: 14px solid var(--ground-deep); }
-  .spin-word { top: calc(50% - 22px); font-size: 1.0625rem; }
+  .spin-word {
+    right: auto; left: 50%; top: calc(50% - 24px); translate: -50% -50%; font-size: 1rem; color: #111;
+    padding: 3px 14px; border-radius: 999px; background: rgba(255, 253, 248, .55);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  }
   .letter { inset: 14px 0 0 0; padding: var(--lt) 20px calc(var(--env-h) * .82 + 28px); box-shadow: 0 -2px 14px rgba(6, 40, 39, .14); }
   .letter-open { margin-right: -10px; }
   .letter-title { font-size: 1.5rem; margin-bottom: 18px; }
@@ -482,6 +506,7 @@ body::before { background: var(--pale); }
 
 <nav class="nav" aria-label="Sections">
   <ul>
+    <li class="nav-home"><a href="#home" data-go="home">Home</a></li>
     <li><a href="#rsvp" data-go="rsvp">RSVP</a></li>
     <li><a href="#events" data-go="events">Events</a></li>
     <li><a href="#stay" data-go="stay">Stay</a></li>
@@ -872,10 +897,20 @@ const CONFIG = {
     const guestsHtml = state.guests.map((g, i) => {
       const yes = g.attending === 'yes';
       const picked = splitDiet(g.dietary).picked;
+      const hasDiet = !!String(g.dietary || '').trim();
       const dietary = CONFIG.askDietary ? `
-        <fieldset class="diet"><legend class="field-label">Dietary preferences</legend>
+        <button class="add-diet" type="button" id="g${i}-diet-toggle" aria-expanded="false" aria-controls="g${i}-diet" ${hasDiet ? 'hidden' : ''}>+ Add dietary preferences</button>
+        <fieldset class="group diet" id="g${i}-diet" ${hasDiet ? '' : 'hidden'}><legend class="field-label">Dietary preferences</legend>
           <div class="choices">${CONFIG.diets.map((d, k) => `<span class="choice check"><input type="checkbox" id="g${i}-d${k}" value="${esc(d)}" ${picked.includes(d) ? 'checked' : ''}><label for="g${i}-d${k}">${esc(d)}</label></span>`).join('')}</div>
         </fieldset>` : '';
+      // Anyone who has already said yes has answered the sangeet question too.
+      const sangeet = `
+        <fieldset class="group"><legend class="field-label">Sangeet <span class="req" aria-hidden="true">*</span></legend>
+          <div class="choices" role="radiogroup" aria-label="Will ${esc(firstName(g.name))} join a sangeet act?">
+            <span class="choice"><input type="radio" name="g${i}-perf" id="g${i}-perf-yes" value="yes" ${g.perform ? 'checked' : ''}><label for="g${i}-perf-yes">Count me in for an act</label></span>
+            <span class="choice"><input type="radio" name="g${i}-perf" id="g${i}-perf-no" value="no" ${!g.perform && g.attending === 'yes' ? 'checked' : ''}><label for="g${i}-perf-no">I'll cheer from the crowd</label></span>
+          </div>
+        </fieldset>`;
       const email = `
         <div class="field"><label for="g${i}-email">Email <span class="req" aria-hidden="true">*</span></label>
           <input id="g${i}-email" type="email" required autocomplete="${i === 0 ? 'email' : 'off'}" maxlength="200" value="${esc(g.email || '')}" placeholder="For updates closer to the date"></div>`;
@@ -888,8 +923,8 @@ const CONFIG = {
         </div>
         <div class="sub" id="g${i}-more" ${yes ? '' : 'hidden'}>
           ${email}
+          ${sangeet}
           ${dietary}
-          <div class="choices"><span class="choice check"><input type="checkbox" id="g${i}-perform" ${g.perform ? 'checked' : ''}><label for="g${i}-perform">Count me in for a sangeet act</label></span></div>
         </div>
       </fieldset>`;
     }).join('');
@@ -914,8 +949,19 @@ const CONFIG = {
       card.querySelectorAll(`input[name="g${i}-att"]`).forEach((r) =>
         r.addEventListener('change', () => { document.getElementById(`g${i}-more`).hidden = r.value !== 'yes' || !r.checked; }));
     });
+    card.querySelectorAll('.add-diet').forEach((b) => b.addEventListener('click', () => {
+      const box = document.getElementById(b.getAttribute('aria-controls'));
+      box.hidden = false; b.hidden = true;
+      box.querySelector('input')?.focus();
+    }));
     document.getElementById('rsvp-form').addEventListener('submit', onSubmit);
   }
+  card.addEventListener('change', (e) => {
+    if (!e.target.matches('.choice input') || !e.target.checked) return;
+    const l = e.target.nextElementSibling;
+    l.classList.remove('wiggle'); void l.offsetWidth; l.classList.add('wiggle');
+  });
+  card.addEventListener('animationend', (e) => e.target.classList.remove('wiggle'));
 
   function showDone(justSent) {
     const names = joinNames(state.guests.map((g) => firstName(g.name)));
@@ -952,7 +998,8 @@ const CONFIG = {
       if (!att) return fail(`Let us know whether ${firstName(g.name)} can come.`);
       // One overall answer: coming means coming to everything.
       const events = att === 'yes' ? allEvents() : {};
-      const out = { name: g.name, attending: att, events, perform: att === 'yes' && document.getElementById(`g${i}-perform`).checked };
+      const perf = (card.querySelector(`input[name="g${i}-perf"]:checked`) || {}).value || '';
+      const out = { name: g.name, attending: att, events, perform: att === 'yes' && perf === 'yes' };
       if (CONFIG.askDietary) {
         const ticked = CONFIG.diets.filter((d, k) => document.getElementById(`g${i}-d${k}`).checked);
         out.dietary = att === 'yes' ? ticked.concat(splitDiet(g.dietary).other).join(', ') : '';
@@ -961,6 +1008,7 @@ const CONFIG = {
       out.email = att === 'yes' ? emailEl.value.trim() : (g.email || '');
       if (att === 'yes' && !out.email) return fail(`Add an email for ${firstName(g.name)} so we can send updates.`);
       if (out.email && !emailEl.checkValidity()) return fail(`That email for ${firstName(g.name)} doesn't look right.`);
+      if (att === 'yes' && !perf) return fail(`Let us know if ${firstName(g.name)} would like to be in a sangeet act.`);
       guests.push(out);
     }
     const note = document.getElementById('note').value.trim();
@@ -1062,9 +1110,9 @@ const CONFIG = {
   const indexOf = (id) => Math.max(0, SECS.findIndex((s) => s.id === id));
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   // Where the pointer sits (screen degrees, 0 = 3 o'clock, clockwise) and which way "next" turns.
-  // Laptop: pointer at 9 o'clock, scroll or drag down for next. Phone: pointer at 12 o'clock, swipe left for next.
-  const geo = () => (narrow.matches ? { base: -90, dir: -1 } : { base: 180, dir: -1 });
-  // In the artwork, section i's purple petal sits at i × 60°.
+  // Laptop: pointer at 9 o'clock, the mandala turns clockwise for next. Phone: pointer at 12 o'clock, swipe left for next.
+  const geo = () => (narrow.matches ? { base: -90, dir: -1 } : { base: 180, dir: 1 });
+  // In the artwork, section i's purple petal sits at -dir × i × 60°.
   const rotation = () => { const { base, dir } = geo(); return base + dir * p * STEP; };
 
   let p = indexOf((location.hash || '').slice(1));
@@ -1118,7 +1166,7 @@ const CONFIG = {
     const phi = Math.atan2(dy, dx) * 180 / Math.PI - rotation();    // angle in the artwork
     const k = Math.round(phi / STEP);
     if (Math.abs(phi - k * STEP) > 17) return -1;
-    return mod(k);
+    return mod(-geo().dir * k);
   }
 
   // Drag to turn (mouse, pen or finger). A tap on a purple petal goes there; anywhere else turns one step.
@@ -1268,8 +1316,17 @@ const CONFIG = {
   overlay.addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeLetter(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && popped) closeLetter(); });
 
-  window.addEventListener('resize', render);
-  narrow.addEventListener('change', render);
+  // On laptops the pair keeps its size; it only shrinks to fit a small window.
+  const comp = document.querySelector('.comp');
+  function fit() {
+    if (narrow.matches) { comp.style.removeProperty('--fit'); return; }
+    const h = window.innerHeight - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) - 32;
+    const w = window.innerWidth - 140;
+    comp.style.setProperty('--fit', Math.min(1, h / comp.offsetHeight, w / comp.offsetWidth).toFixed(3));
+  }
+  window.addEventListener('resize', () => { fit(); render(); });
+  narrow.addEventListener('change', () => { fit(); render(); });
+  fit();
   render();
   settle();
 })();
