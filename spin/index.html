@@ -275,13 +275,13 @@ p { margin: 0; }
   --cream: #F6E3BC;             /* warm gold bokeh behind everything */
   --paper: #FFFDF8;
   --purple: #6B2A8C;
-  --D: 540px;                   /* laptop: fixed sizes, so the letter stays to scale with the mandala */
-  --env-w: 440px;
-  --desk-h: 560px;
+  --D: 420px;                   /* laptop: fixed sizes; the mandala is 2/3 the envelope's height */
+  --env-w: 600px;
+  --desk-h: 640px;
   --env-inset: 0px;             /* envelope inset within the desk */
-  --letter-inset: 20px;         /* letter inset within the envelope */
+  --letter-inset: 26px;         /* letter inset within the envelope */
   --lt: 40px;                   /* letter top padding */
-  --env-h: 150px;
+  --env-h: 196px;
   --env-b: 0px;
   --rose-deep: #A9325A;
   --liner: #F0E064;
@@ -308,6 +308,13 @@ body::before { background: #F9EBCB; }
 @media (min-width: 720px) { .nav ul { gap: 10px; padding-right: 28px; } }
 
 .stage { position: fixed; inset: var(--nav-h) 0 0 0; }
+/* Laptop: the nav sits just above the mandala and envelope, and the three are centred as one group. */
+@media (min-width: 900px) {
+  .stage { inset: 0; }
+  .nav { top: max(0px, calc(50% - (var(--desk-h) * var(--fit, 1) + var(--nav-h) + 12px) / 2)); bottom: auto; }
+  .nav ul { justify-content: center; padding: 0; }
+  .stage .comp { top: calc(50% + (var(--nav-h) + 12px) / 2); }
+}
 /* Laptop: half the mandala peeks out from behind the envelope, and the pair sits centred. */
 .comp { position: absolute; top: 50%; left: 50%; height: var(--desk-h); width: calc(var(--D) * .64 + var(--env-w)); translate: -50% -50%; scale: var(--fit, 1); }
 
@@ -318,11 +325,16 @@ body::before { background: #F9EBCB; }
 .dial-wobble, .dial-rot { position: absolute; inset: 0; }
 .dial-rot { will-change: transform; }
 .dial-rot img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; -webkit-user-drag: none; }
-/* "Spin" sits just left of the pointer. */
+/* "Spin" is a teal oval button just left of the pointer; pressing it turns the mandala. */
 .spin-word {
-  position: absolute; z-index: 2; right: calc(100% + 38px); top: 50%; translate: 0 -54%; pointer-events: none; white-space: nowrap;
-  font-family: var(--font-head); font-style: italic; font-size: 1rem; color: var(--ink);
+  position: absolute; z-index: 2; right: calc(100% + 36px); top: 50%; translate: 0 -50%; white-space: nowrap; cursor: pointer;
+  padding: 9px 22px; border: 0; border-radius: 999px; background: var(--ground); color: #fff;
+  font-family: var(--font-text); font-weight: 600; font-size: 0.875rem; letter-spacing: 0.04em;
+  box-shadow: 0 4px 12px rgba(6, 40, 39, .25); transition: background .2s, transform .15s;
 }
+.spin-word:hover { background: var(--ground-deep); }
+.spin-word:active { transform: scale(.96); }
+.spin-word:focus-visible { outline: 3px solid var(--ground-deep); outline-offset: 3px; }
 /* The pointer: the purple petal it touches is the section you're on. */
 .pointer {
   position: absolute; z-index: 3; left: -28px; top: 50%; translate: 0 -50%;
@@ -330,11 +342,12 @@ body::before { background: #F9EBCB; }
 }
 /* A little wobble, until the first spin, to say "turn me". */
 @media (prefers-reduced-motion: no-preference) {
-  .dial.wobble .dial-wobble { animation: wobble 5.5s ease-in-out 1.8s infinite; }
+  .dial.wobble .dial-wobble { animation: wobble 4.5s ease-in-out .5s infinite; }
 }
+/* Wobbles first, then rests, so it moves as soon as the page opens. */
 @keyframes wobble {
-  0%, 62%, 100% { transform: rotate(0deg); }
-  68% { transform: rotate(8deg); } 76% { transform: rotate(-6deg); } 84% { transform: rotate(3deg); } 91% { transform: rotate(-1deg); }
+  0%, 38%, 100% { transform: rotate(0deg); }
+  7% { transform: rotate(8deg); } 16% { transform: rotate(-6deg); } 25% { transform: rotate(3deg); } 32% { transform: rotate(-1deg); }
 }
 
 /* ---------- the envelope ---------- */
@@ -485,6 +498,7 @@ body::before { background: #F9EBCB; }
   .pointer { top: -4px; left: 50%; translate: -50% 0; border: 0; border-inline: 10px solid transparent; border-bottom: 14px solid var(--ground-deep); }
   .spin-word {
     right: auto; left: 50%; top: calc(50% - 24px); translate: -50% -50%; font-size: 1rem; color: #111;
+    font-family: var(--font-head); font-style: italic; font-weight: 400; letter-spacing: 0; box-shadow: none;
     padding: 3px 14px; border-radius: 999px; background: rgba(255, 253, 248, .55);
     -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   }
@@ -523,7 +537,7 @@ body::before { background: #F9EBCB; }
         <img src="../img/mandala.webp" alt="" width="718" height="714" draggable="false">
         <img src="../img/mandala-petals.webp" alt="" width="718" height="714" draggable="false">
       </div></div>
-      <span class="spin-word" aria-hidden="true">Spin</span>
+      <button type="button" class="spin-word" id="spin-btn" tabindex="-1">Spin</button>
       <span class="pointer" aria-hidden="true"></span>
     </div>
   </div>
@@ -1174,7 +1188,7 @@ const CONFIG = {
   // Drag to turn (mouse, pen or finger). A tap on a purple petal goes there; anywhere else turns one step.
   let drag = null;
   wrap.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0 || !dial.contains(e.target)) return;
+    if (e.button !== 0 || !dial.contains(e.target) || e.target.closest('.spin-word')) return;
     cancelAnimationFrame(anim); stopWobble();
     const r = dial.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
@@ -1206,6 +1220,9 @@ const CONFIG = {
   }
   wrap.addEventListener('pointerup', endDrag);
   wrap.addEventListener('pointercancel', endDrag);
+
+  // The "Spin" button turns the mandala to the next section.
+  $('spin-btn').addEventListener('click', (e) => { e.stopPropagation(); stopWobble(); spinBy(1); });
 
   // Mouse wheel or trackpad over the mandala: one notch, one section.
   let wheelAcc = 0, wheelLock = 0;
@@ -1327,10 +1344,11 @@ const CONFIG = {
   // On laptops the pair keeps its size; it only shrinks to fit a small window.
   const comp = document.querySelector('.comp');
   function fit() {
-    if (narrow.matches) { comp.style.removeProperty('--fit'); return; }
-    const h = window.innerHeight - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) - 32;
-    const w = window.innerWidth - 140;
-    comp.style.setProperty('--fit', Math.min(1, h / comp.offsetHeight, w / comp.offsetWidth).toFixed(3));
+    const root = document.documentElement;
+    if (narrow.matches) { root.style.removeProperty('--fit'); return; }
+    const h = window.innerHeight - parseFloat(getComputedStyle(root).getPropertyValue('--nav-h')) - 44;
+    const w = window.innerWidth - 2 * 150;   // room for the Spin button on the left, kept symmetric
+    root.style.setProperty('--fit', Math.min(1, h / comp.offsetHeight, w / comp.offsetWidth).toFixed(3));
   }
   window.addEventListener('resize', () => { fit(); render(); });
   narrow.addEventListener('change', () => { fit(); render(); });
