@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Anushri &amp; Bharath</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#1E6F6D">
+<meta name="theme-color" content="#BDD9D8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gelasio:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap">
@@ -265,14 +265,21 @@ p { margin: 0; }
    ===================================================================== */
 :root {
   --nav-h: 52px;
-  --env-w: min(620px, calc(100% - 56px));
+  --pale: #BDD9D8;              /* the page teal at 30%, so the mandala, envelope and letter stand out */
+  --purple: #6B2A8C;
+  --D: min(76vh, 620px, 50vw);  /* mandala size */
+  --env-w: min(600px, 44vw);
+  --env-inset: 0px;             /* envelope inset within the desk */
+  --letter-inset: 20px;         /* letter inset within the envelope */
+  --lt: 40px;                   /* letter top padding */
   --env-h: clamp(120px, 23vh, 200px);
   --env-b: 32px;
   --rose-deep: #A9325A;
   --liner: #F0E064;
 }
 html, body { height: 100%; }
-body { overflow: hidden; overscroll-behavior: none; }
+body { overflow: hidden; overscroll-behavior: none; background: var(--pale); color: var(--ink); }
+body::before { background: var(--pale); }
 
 .nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); z-index: 20; }
 .nav ul {
@@ -283,53 +290,54 @@ body { overflow: hidden; overscroll-behavior: none; }
 .nav a {
   display: block; padding: 10px 8px; white-space: nowrap; text-decoration: none;
   font-family: var(--font-text); font-weight: 600; font-size: 0.75rem;
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-ground);
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
   border-bottom: 2px solid transparent;
 }
-.nav a:hover, .nav a[aria-current] { color: var(--gold); }
-.nav a[aria-current] { border-bottom-color: var(--gold); }
+.nav a:hover, .nav a[aria-current] { color: var(--ground-deep); }
+.nav a[aria-current] { border-bottom-color: var(--rose); }
 @media (min-width: 720px) { .nav ul { gap: 10px; padding-right: 28px; } }
 
-.stage {
-  position: fixed; inset: var(--nav-h) 0 0 0;
-  display: grid; grid-template-columns: minmax(0, 44fr) minmax(0, 56fr);
-}
+.stage { position: fixed; inset: var(--nav-h) 0 0 0; }
+/* Laptop: half the mandala peeks out from behind the envelope, and the pair sits centred. */
+.comp { position: absolute; top: 0; bottom: 0; left: 50%; width: calc(var(--D) * .64 + var(--env-w)); translate: -50% 0; }
 
 /* ---------- the dial ---------- */
-.dial-wrap { position: relative; display: grid; place-items: center; min-height: 0; touch-action: none; user-select: none; -webkit-user-select: none; }
-.dial { position: relative; width: min(86%, calc(100vh - var(--nav-h) - 120px), 600px); aspect-ratio: 1; }
-.dial-mandala { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; -webkit-user-drag: none; will-change: transform; }
-.dial-label {
-  position: absolute; left: 0; top: 0; z-index: 2;
-  padding: 7px 14px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,.45);
-  background: rgba(15, 63, 62, .84); color: #fff;
-  font-family: var(--font-text); font-weight: 600; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
-  white-space: nowrap; touch-action: none; transition: background-color .25s, color .25s, border-color .25s, opacity .2s;
+.dial-wrap { position: absolute; z-index: 1; left: 0; top: 50%; width: var(--D); height: var(--D); translate: 0 -50%; touch-action: none; user-select: none; -webkit-user-select: none; }
+.dial { position: relative; width: 100%; height: 100%; border-radius: 50%; }
+.dial:focus-visible { outline: 3px solid var(--ground-deep); outline-offset: 6px; }
+.dial-wobble, .dial-rot { position: absolute; inset: 0; }
+.dial-rot { will-change: transform; }
+.dial-rot img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; -webkit-user-drag: none; }
+/* "Spin" sits in the middle of the mandala. */
+.spin-word {
+  position: absolute; z-index: 2; left: 50%; top: 50%; translate: -50% -54%; pointer-events: none;
+  font-family: var(--font-head); font-style: italic; font-size: clamp(1rem, calc(var(--D) * .034), 1.375rem);
+  color: #fff; text-shadow: 0 1px 3px rgba(6, 40, 39, .55);
 }
-.dial-label.is-current { background: var(--gold); color: var(--ink); border-color: var(--gold); }
-.dial-label:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-/* The pointer: a gold notch at 3 o'clock, aimed at the envelope. */
+/* The pointer: the purple petal it touches is the section you're on. */
 .pointer {
-  position: absolute; z-index: 3; top: 50%; right: -26px; translate: 0 -50%;
-  width: 0; height: 0; border-block: 11px solid transparent; border-left: 16px solid var(--gold);
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,.25));
+  position: absolute; z-index: 3; left: -28px; top: 50%; translate: 0 -50%;
+  width: 0; height: 0; border-block: 12px solid transparent; border-left: 18px solid var(--ground-deep);
 }
-.hint {
-  position: absolute; left: 50%; bottom: 22px; translate: -50% 0; margin: 0; white-space: nowrap;
-  font-family: var(--font-head); font-style: italic; font-size: 1.0625rem; color: var(--on-ground-soft);
-  transition: opacity .5s;
+/* A little wobble, until the first spin, to say "turn me". */
+@media (prefers-reduced-motion: no-preference) {
+  .dial.wobble .dial-wobble { animation: wobble 5.5s ease-in-out 1.8s infinite; }
 }
-.hint.gone { opacity: 0; }
+@keyframes wobble {
+  0%, 62%, 100% { transform: rotate(0deg); }
+  68% { transform: rotate(8deg); } 76% { transform: rotate(-6deg); } 84% { transform: rotate(3deg); } 91% { transform: rotate(-1deg); }
+}
 
 /* ---------- the envelope ---------- */
-.desk { position: relative; min-height: 0; perspective: 1600px; }
-.env-back, .env-front, .flap { position: absolute; left: calc((100% - var(--env-w)) / 2); width: var(--env-w); }
+.desk { position: absolute; z-index: 2; top: 0; bottom: 0; right: 0; width: var(--env-w); perspective: 1600px; pointer-events: none; }
+.desk > * { pointer-events: auto; }
+.env-back, .env-front, .flap { position: absolute; left: var(--env-inset); right: var(--env-inset); }
 .env-back {
   bottom: var(--env-b); height: var(--env-h); z-index: 1; border-radius: 4px 4px 10px 10px;
   background: var(--liner) url(../img/mandala.webp) center 20% / 46% auto no-repeat;
   box-shadow: inset 0 0 0 9999px rgba(240, 224, 100, .86);
 }
-.env-front { bottom: var(--env-b); height: var(--env-h); z-index: 3; overflow: visible; pointer-events: none; filter: drop-shadow(0 -2px 6px rgba(6,40,39,.18)) drop-shadow(0 14px 22px rgba(6,40,39,.35)); }
+.env-front { bottom: var(--env-b); height: var(--env-h); width: calc(100% - 2 * var(--env-inset)); z-index: 3; overflow: visible; pointer-events: none; filter: drop-shadow(0 -2px 6px rgba(6,40,39,.18)) drop-shadow(0 14px 22px rgba(6,40,39,.35)); }
 /* The flap is hinged on the envelope's top edge. Open, it points up behind the letter; closed, it folds down over the front. */
 .flap {
   bottom: calc(var(--env-b) + var(--env-h)); height: calc(var(--env-h) * .62); z-index: 4;
@@ -351,7 +359,7 @@ body { overflow: hidden; overscroll-behavior: none; }
 /* ---------- the letter ---------- */
 .letter-clip {
   position: absolute; z-index: 2; top: 0; bottom: calc(var(--env-b) + 12px);
-  left: calc((100% - var(--env-w)) / 2 + 20px); right: calc((100% - var(--env-w)) / 2 + 20px);
+  left: calc(var(--env-inset) + var(--letter-inset)); right: calc(var(--env-inset) + var(--letter-inset));
   overflow: hidden; border-radius: 12px 12px 0 0;
 }
 .letter {
@@ -359,12 +367,44 @@ body { overflow: hidden; overscroll-behavior: none; }
   position: absolute; inset: 22px 0 0 0; overflow-y: auto; overscroll-behavior: contain;
   background: var(--paper); color: var(--ink); color-scheme: light;
   border-radius: 12px 12px 0 0; box-shadow: 0 -6px 30px rgba(6, 40, 39, .22);
-  padding: 40px clamp(22px, 5%, 44px) calc(var(--env-h) * .82 + 36px);
+  padding: var(--lt) clamp(22px, 5%, 44px) calc(var(--env-h) * .82 + 36px);
   transition: transform .66s cubic-bezier(.2,.95,.3,1.08);
   scrollbar-width: thin; scrollbar-color: var(--ink-rule) transparent;
 }
 .letter.tucked { transform: translateY(calc(100% + 24px)); transition: transform .4s cubic-bezier(.55,0,.85,.4); }
 .letter.fade { opacity: 0; transition: opacity .2s; }
+.letter:not(.popped) { cursor: zoom-in; }
+/* A small "Open" button that stays at the letter's top-right corner while it scrolls. */
+.letter-bar { position: sticky; top: var(--lt); z-index: 3; height: 0; display: flex; justify-content: flex-end; pointer-events: none; }
+.letter-open {
+  pointer-events: auto; margin-top: calc(10px - var(--lt)); margin-right: calc(-1 * clamp(22px, 5%, 44px) + 10px);
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px;
+  border: 1.5px solid var(--ink-rule); background: rgba(247, 251, 250, .92); color: var(--ground-deep);
+  font-family: var(--font-text); font-weight: 600; font-size: 0.75rem; cursor: pointer;
+}
+.letter-open:hover { border-color: var(--ground); }
+.letter-open svg { width: 14px; height: 14px; }
+/* The letter, popped out to read in full. */
+.overlay { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; }
+.overlay[hidden] { display: none; }
+.overlay-backdrop { position: absolute; inset: 0; background: rgba(15, 63, 62, .55); }
+.sheet { position: relative; width: min(720px, 100%); height: min(900px, calc(100dvh - 32px)); }
+.sheet .letter.popped {
+  inset: 0; padding: 56px clamp(22px, 6%, 56px) 48px; border-radius: 14px;
+  box-shadow: 0 30px 80px rgba(6, 40, 39, .45); transform: none; transition: none;
+}
+.sheet .letter-bar { display: none; }
+.sheet-close {
+  position: absolute; z-index: 2; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%;
+  border: 0; background: var(--ground); color: #fff; display: grid; place-items: center; cursor: pointer;
+}
+.sheet-close svg { width: 18px; height: 18px; }
+@media (prefers-reduced-motion: no-preference) {
+  .overlay.opening .overlay-backdrop { animation: fade-in .3s ease both; }
+  .overlay.opening .sheet { animation: lift .45s cubic-bezier(.2,.9,.3,1.05) both; }
+}
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes lift { from { opacity: 0; transform: translateY(48px) scale(.95); } }
 .letter :focus-visible { outline-color: var(--ground); }
 .letter .soft { color: var(--ink-soft); }
 .letter a { color: var(--ground-deep); }
@@ -380,10 +420,12 @@ body { overflow: hidden; overscroll-behavior: none; }
 .letter .airport { border-color: var(--ink-rule); }
 .letter .acc summary:hover { color: var(--gold); }
 .letter .stay-photo { margin-top: 0; }
-/* Photos as a two-column scrapbook inside the letter. */
-.letter .photos { display: block; columns: 2; column-gap: 12px; overflow: visible; padding: 0; }
-.letter .photos figure { break-inside: avoid; margin: 0 0 12px; }
-.letter .photos img { width: 100%; height: auto; }
+/* Photos in rows of two, in order, so the last one (the cat) closes the letter at full width. */
+.letter .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; overflow: visible; padding: 0; }
+.letter .photos figure { margin: 0; }
+.letter .photos img { width: 100%; height: auto; aspect-ratio: 4 / 5 !important; object-fit: cover; }
+.letter .photos figure:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.letter .photos figure:last-child:nth-child(odd) img { aspect-ratio: 3 / 2 !important; object-position: 50% 40%; }
 .sign-off { margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--ink-rule); font-family: var(--font-head); font-size: 1.125rem; }
 .next {
   display: inline-flex; margin-top: 36px; padding: 10px 0; border: 0; background: none; cursor: pointer;
@@ -417,22 +459,24 @@ body { overflow: hidden; overscroll-behavior: none; }
 
 /* ---------- phones: the mandala becomes a half-dial along the bottom ---------- */
 @media (max-width: 899px) {
-  :root { --nav-h: 46px; --env-w: calc(100% - 20px); --env-h: 96px; --env-b: 0px; }
-  .stage { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) 150px; }
-  .dial-wrap { grid-row: 2; place-items: start center; overflow: hidden; }
-  .dial { width: 380px; margin-top: 10px; }
-  .pointer { top: -2px; right: auto; left: 50%; translate: -50% 0; border: 0; border-inline: 10px solid transparent; border-bottom: 14px solid var(--gold); }
-  .dial-label { padding: 6px 12px; font-size: 0.6875rem; }
-  .hint { bottom: 8px; font-size: 0.9375rem; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.45); }
-  .letter-clip { left: 18px; right: 18px; }
-  .letter { inset: 14px 0 0 0; padding: 30px 20px calc(var(--env-h) * .82 + 28px); }
+  :root { --nav-h: 46px; --env-h: 96px; --env-b: 0px; --env-inset: 10px; --letter-inset: 8px; --lt: 30px; --D: 320px; }
+  .comp { left: 0; right: 0; width: auto; translate: none; display: grid; grid-template-rows: minmax(0, 1fr) 172px; }
+  .desk { position: relative; grid-row: 1; width: auto; top: auto; bottom: auto; right: auto; }
+  .dial-wrap { position: relative; grid-row: 2; left: auto; top: auto; width: auto; height: auto; translate: none; overflow: hidden; display: grid; justify-items: center; align-items: start; }
+  .dial { width: var(--D); height: var(--D); margin-top: 8px; }
+  .pointer { top: -4px; left: 50%; translate: -50% 0; border: 0; border-inline: 10px solid transparent; border-bottom: 14px solid var(--ground-deep); }
+  .spin-word { top: calc(50% - 22px); font-size: 1.0625rem; }
+  .letter { inset: 14px 0 0 0; padding: var(--lt) 20px calc(var(--env-h) * .82 + 28px); box-shadow: 0 -2px 14px rgba(6, 40, 39, .14); }
+  .letter-open { margin-right: -10px; }
   .letter-title { font-size: 1.5rem; margin-bottom: 18px; }
   .letter .timeline li { grid-template-columns: 1fr; }
   .sec-home { gap: 12px; }
   .sec-home .hero-clip { width: 108px; }
   .sec-home .lede { font-size: 0.9375rem; }
-  .letter { box-shadow: 0 -2px 14px rgba(6, 40, 39, .14); }
   .seal { width: 44px; height: 44px; font-size: .9rem; }
+  .overlay { padding: 10px; }
+  .sheet { height: calc(100dvh - 20px); }
+  .sheet .letter.popped { padding: 54px 20px 36px; }
 }
 </style>
 </head>
@@ -449,12 +493,16 @@ body { overflow: hidden; overscroll-behavior: none; }
 </nav>
 
 <main class="stage">
+ <div class="comp">
   <div class="dial-wrap" id="dial-wrap">
-    <div class="dial" id="dial" role="group" aria-label="Spin the mandala to choose a section">
-      <img class="dial-mandala" src="../img/mandala.webp" alt="" width="718" height="714" draggable="false">
+    <div class="dial wobble" id="dial" tabindex="0" role="slider" aria-label="Spin the mandala to choose a section" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1" aria-valuetext="Home">
+      <div class="dial-wobble"><div class="dial-rot" id="dial-rot">
+        <img src="../img/mandala.webp" alt="" width="718" height="714" draggable="false">
+        <img src="../img/mandala-petals.webp" alt="" width="718" height="714" draggable="false">
+      </div></div>
+      <span class="spin-word" aria-hidden="true">Spin</span>
       <span class="pointer" aria-hidden="true"></span>
     </div>
-    <p class="hint" id="hint" aria-hidden="true">Spin the mandala</p>
   </div>
 
   <div class="desk" id="desk">
@@ -462,6 +510,7 @@ body { overflow: hidden; overscroll-behavior: none; }
     <div class="flap" aria-hidden="true"><div class="flap-in"></div><div class="flap-out"><span class="seal">A&amp;B</span></div></div>
     <div class="letter-clip">
       <article class="letter tucked" id="letter">
+        <div class="letter-bar"><button class="letter-open" type="button" aria-label="Open the letter to read it in full"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 2.5h4v4M13.5 2.5 9 7M6.5 13.5h-4v-4M2.5 13.5 7 9"/></svg>Open</button></div>
         <section class="sec sec-home" data-sec="home" aria-labelledby="t-home">
           <figure class="hero-clip"><picture><source media="(prefers-reduced-motion: reduce)" srcset="../img/dance-still.jpg"><img src="../img/dance.webp" alt="Anushri and Bharath dancing in front of an arched doorway" width="480" height="600"></picture></figure>
           <p class="eyebrow">Save the date</p>
@@ -594,7 +643,15 @@ body { overflow: hidden; overscroll-behavior: none; }
       <path d="M0 60 L44 30 Q50 26 56 30 L100 60" fill="none" stroke="#8E2A4D" stroke-opacity=".55" stroke-width="1" vector-effect="non-scaling-stroke"/>
     </svg>
   </div>
+ </div>
 </main>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="overlay-backdrop" data-close></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Letter">
+    <button class="sheet-close" type="button" data-close aria-label="Close the letter"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 4l10 10M14 4 4 14"/></svg></button>
+  </div>
+</div>
 
 <script>
 
@@ -620,10 +677,10 @@ const CONFIG = {
   // Add photos to the img folder and list them here. Captions are optional.
   photos: [
     { src: '../img/photo-1.jpg', w: 1600, h: 1200, alt: 'Anushri and Bharath at a dining hall table', caption: '' },
-    { src: '../img/photo-2.jpg', w: 1600, h: 1200, alt: 'Anushri and Bharath at a lookout above Waikiki and the Pacific', caption: '' },
-    { src: '../img/photo-3.jpg', w: 1200, h: 1600, alt: 'Anushri and Bharath in costume on a rainy Halloween night in New York', caption: '' },
-    { src: '../img/photo-4.jpg', w: 1600, h: 1200, alt: 'Anushri and Bharath in front of the painted Berlin Wall', caption: '' },
-    { src: '../img/photo-5.jpg', w: 1600, h: 1200, alt: 'Anushri and Bharath on a forest hiking trail', caption: '' },
+    { src: '../img/photo-2.jpg', w: 1200, h: 1600, alt: 'Anushri and Bharath on a balcony above a turquoise sea', caption: '' },
+    { src: '../img/photo-3.jpg', w: 1600, h: 1200, alt: 'Anushri and Bharath hugging in a cosy bar decorated with wreaths', caption: '' },
+    { src: '../img/photo-4.jpg', w: 1600, h: 1200, alt: 'Anushri smiling in a green beanie while Bharath strikes a pose on a misty trail', caption: '' },
+    { src: '../img/photo-5.jpg', w: 1200, h: 1600, alt: 'Their black-and-white cat stretched out in a cardboard box', caption: '' },
   ],
 };
 
@@ -959,8 +1016,9 @@ const CONFIG = {
 <script>
 /* =====================================================================
    The dial. p is a continuous position in sections (0 = Home, 1 = RSVP …).
-   Dragging turns the mandala; letting go snaps to the nearest section, and
-   the letter for that section comes out of the envelope.
+   Each section has a purple petal; the one at the pointer is the section
+   you're on. Dragging turns the mandala; letting go snaps to a petal, and
+   that section's letter comes out of the envelope.
    ===================================================================== */
 (function () {
   'use strict';
@@ -972,43 +1030,29 @@ const CONFIG = {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   const narrow = window.matchMedia('(max-width: 899px)');
   const $ = (id) => document.getElementById(id);
-  const dial = $('dial'), wrap = $('dial-wrap'), mandala = dial.querySelector('.dial-mandala');
-  const letter = $('letter'), desk = $('desk'), hint = $('hint');
+  const dial = $('dial'), wrap = $('dial-wrap'), rot = $('dial-rot');
+  const letter = $('letter'), desk = $('desk'), overlay = $('overlay'), sheet = $('sheet');
+  const clip = letter.parentElement;
   const sections = SECS.map((s) => letter.querySelector(`[data-sec="${s.id}"]`));
   const mod = (n) => ((n % N) + N) % N;
   const indexOf = (id) => Math.max(0, SECS.findIndex((s) => s.id === id));
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-  // Laptop: pointer at 3 o'clock, clockwise = next. Phone: pointer at 12 o'clock, swipe left = next.
-  const geo = () => (narrow.matches ? { base: -90, dir: -1 } : { base: 0, dir: 1 });
+  // Where the pointer sits (screen degrees, 0 = 3 o'clock, clockwise) and which way "next" turns.
+  // Laptop: pointer at 9 o'clock, scroll or drag down for next. Phone: pointer at 12 o'clock, swipe left for next.
+  const geo = () => (narrow.matches ? { base: -90, dir: -1 } : { base: 180, dir: -1 });
+  // In the artwork, section i's purple petal sits at i × 60°.
+  const rotation = () => { const { base, dir } = geo(); return base + dir * p * STEP; };
 
   let p = indexOf((location.hash || '').slice(1));
-  let shown = -1, want = p, busy = false, anim = 0, D = 0, focusAfter = false;
-
-  const labels = SECS.map((s, i) => {
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'dial-label'; b.textContent = s.label; b.dataset.i = i;
-    dial.appendChild(b);
-    return b;
-  });
+  let shown = -1, want = p, busy = false, anim = 0, focusAfter = false, popped = false, opener = null;
 
   function render() {
-    const { base, dir } = geo();
-    const c = D / 2, R = D * 0.395;
-    mandala.style.transform = `rotate(${dir * p * STEP}deg)`;
+    rot.style.transform = `rotate(${rotation()}deg)`;
     const cur = mod(Math.round(p));
-    labels.forEach((b, i) => {
-      let d = i - p; d -= N * Math.round(d / N);
-      const th = (base - dir * d * STEP) * Math.PI / 180;
-      b.style.transform = `translate(${c + R * Math.cos(th)}px, ${c + R * Math.sin(th)}px) translate(-50%, -50%)`;
-      b.classList.toggle('is-current', i === cur);
-      if (i === cur) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
-      if (narrow.matches) {
-        const o = Math.max(0, Math.min(1, (1.6 - Math.abs(d)) / 0.6));
-        b.style.opacity = o; b.style.pointerEvents = o < 0.3 ? 'none' : '';
-      } else { b.style.opacity = ''; b.style.pointerEvents = ''; }
-    });
+    dial.setAttribute('aria-valuenow', cur + 1);
+    dial.setAttribute('aria-valuetext', SECS[cur].label);
   }
-  function layout() { D = dial.clientWidth; render(); }
+  const stopWobble = () => dial.classList.remove('wobble');
 
   /* ---------- turning ---------- */
   function animateTo(target, ms) {
@@ -1025,12 +1069,13 @@ const CONFIG = {
     anim = requestAnimationFrame(tick);
   }
   function spinTo(i) {
+    if (popped) closeLetter();
     const cur = Math.round(p);
     let d = mod(i - cur); if (d > N / 2) d -= N;
     if (d === 0 && Math.abs(p - cur) < 0.001) return settle();
     animateTo(cur + d, 420 + 160 * Math.abs(d));
   }
-  const spinBy = (k) => animateTo(Math.round(p) + k);
+  const spinBy = (k) => { if (popped) closeLetter(); animateTo(Math.round(p) + k); };
   function settle() {
     const i = mod(Math.round(p));
     try { history.replaceState(null, '', location.pathname + location.search + (i ? '#' + SECS[i].id : '')); } catch (e) { /* ignore */ }
@@ -1039,16 +1084,27 @@ const CONFIG = {
     });
     showLetter(i);
   }
-  const hideHint = () => hint.classList.add('gone');
 
-  // Drag to turn (mouse, pen or finger). A tap on a name goes there; a tap on the mandala turns it one step.
+  // Which purple petal (if any) is under a point on the mandala.
+  function petalAt(x, y) {
+    const r = dial.getBoundingClientRect();
+    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2);
+    const rad = Math.hypot(dx, dy) / r.width;
+    if (rad < 0.27 || rad > 0.52) return -1;
+    const phi = Math.atan2(dy, dx) * 180 / Math.PI - rotation();    // angle in the artwork
+    const k = Math.round(phi / STEP);
+    if (Math.abs(phi - k * STEP) > 17) return -1;
+    return mod(k);
+  }
+
+  // Drag to turn (mouse, pen or finger). A tap on a purple petal goes there; anywhere else turns one step.
   let drag = null;
   wrap.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0) return;
-    cancelAnimationFrame(anim);
+    if (e.button !== 0 || !dial.contains(e.target)) return;
+    cancelAnimationFrame(anim); stopWobble();
     const r = dial.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-    drag = { cx, cy, a: Math.atan2(e.clientY - cy, e.clientX - cx), p0: Math.round(p), x: e.clientX, y: e.clientY, moved: false, target: e.target };
+    drag = { cx, cy, a: Math.atan2(e.clientY - cy, e.clientX - cx), p0: Math.round(p), x: e.clientX, y: e.clientY, moved: false };
     wrap.setPointerCapture(e.pointerId);
   });
   wrap.addEventListener('pointermove', (e) => {
@@ -1058,24 +1114,20 @@ const CONFIG = {
     const a = Math.atan2(e.clientY - drag.cy, e.clientX - drag.cx);
     let da = a - drag.a; da -= 2 * Math.PI * Math.round(da / (2 * Math.PI));
     drag.a = a;
-    const dp = geo().dir * (da * 180 / Math.PI) / STEP;
-    p += dp;
-    render(); hideHint();
+    p += geo().dir * (da * 180 / Math.PI) / STEP;
+    render();
   });
-  function endDrag() {
+  function endDrag(e) {
     if (!drag) return;
     const d = drag; drag = null;
     if (!d.moved) {
-      const lbl = d.target.closest && d.target.closest('.dial-label');
-      hideHint();
-      if (lbl) { focusAfter = false; return spinTo(+lbl.dataset.i); }
-      if (dial.contains(d.target)) return spinBy(1);
-      return;
+      const i = petalAt(d.x, d.y);
+      return i >= 0 && i !== mod(Math.round(p)) ? spinTo(i) : spinBy(1);
     }
     // Every spin moves at least one section; a long drag lands wherever it was let go.
-    const start = Math.round(d.p0), moved = p - d.p0;
+    const moved = p - d.p0;
     let target = Math.round(p);
-    if (target === start && Math.abs(moved) > 0.12) target = start + Math.sign(moved);
+    if (target === d.p0 && Math.abs(moved) > 0.12) target = d.p0 + Math.sign(moved);
     animateTo(target);
   }
   wrap.addEventListener('pointerup', endDrag);
@@ -1084,25 +1136,20 @@ const CONFIG = {
   // Mouse wheel or trackpad over the mandala: one notch, one section.
   let wheelAcc = 0, wheelLock = 0;
   wrap.addEventListener('wheel', (e) => {
-    e.preventDefault();
+    if (!dial.contains(e.target)) return;
+    e.preventDefault(); stopWobble();
     const now = performance.now();
     if (now < wheelLock) return;
     wheelAcc += Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-    if (Math.abs(wheelAcc) > 30) { spinBy(Math.sign(wheelAcc)); wheelAcc = 0; wheelLock = now + 520; hideHint(); }
+    if (Math.abs(wheelAcc) > 30) { spinBy(Math.sign(wheelAcc)); wheelAcc = 0; wheelLock = now + 520; }
   }, { passive: false });
 
-  // Keyboard: Enter on a name goes there; arrow keys turn the dial.
-  dial.addEventListener('click', (e) => {
-    const lbl = e.target.closest('.dial-label');
-    if (lbl && e.detail === 0) { focusAfter = true; spinTo(+lbl.dataset.i); }
-  });
+  // Keyboard: the mandala is a slider; arrow keys turn it.
   dial.addEventListener('keydown', (e) => {
-    const k = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    const k = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1, PageDown: 1, PageUp: -1 }[e.key];
     if (!k) return;
-    e.preventDefault(); hideHint();
-    const next = mod(Math.round(p) + k);
+    e.preventDefault(); stopWobble();
     spinBy(k);
-    labels[next].focus();
   });
 
   // The nav, the RSVP button and the "Next" links turn the dial too.
@@ -1110,7 +1157,7 @@ const CONFIG = {
     const go = e.target.closest('[data-go]');
     if (!go) return;
     e.preventDefault();
-    focusAfter = true; hideHint();
+    focusAfter = true; stopWobble();
     spinTo(indexOf(go.dataset.go));
   });
 
@@ -1127,6 +1174,7 @@ const CONFIG = {
     sections.forEach((s, k) => { s.hidden = k !== j; });
     shown = j;
     letter.scrollTop = 0;
+    sheet.setAttribute('aria-label', SECS[j].label);
     const t = sections[j].querySelector('.letter-title');
     if (t) { splitTitle(t); t.classList.remove('in'); void t.offsetWidth; requestAnimationFrame(() => t.classList.add('in')); }
   }
@@ -1165,9 +1213,40 @@ const CONFIG = {
     if (want !== shown) showLetter(want);
   }
 
-  window.addEventListener('resize', layout);
-  narrow.addEventListener('change', layout);
-  layout();
+  // Tap the letter (or its Open button) to read it in full in a pop-out.
+  function openLetter() {
+    if (popped || busy) return;
+    popped = true; opener = document.activeElement;
+    const top = letter.scrollTop;
+    sheet.appendChild(letter);
+    letter.classList.add('popped');
+    overlay.hidden = false;
+    overlay.classList.remove('opening'); void overlay.offsetWidth; overlay.classList.add('opening');
+    letter.scrollTop = top;
+    sheet.querySelector('.sheet-close').focus({ preventScroll: true });
+  }
+  function closeLetter() {
+    if (!popped) return;
+    popped = false;
+    const top = letter.scrollTop;
+    letter.classList.remove('popped');
+    clip.appendChild(letter);
+    overlay.hidden = true;
+    letter.scrollTop = top;
+    if (opener && opener.focus && document.contains(opener)) opener.focus({ preventScroll: true });
+  }
+  letter.addEventListener('click', (e) => {
+    if (popped) return;
+    const control = e.target.closest('a, button, input, label, select, textarea, summary, [data-go]');
+    if (control && !control.classList.contains('letter-open')) return;
+    openLetter();
+  });
+  overlay.addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeLetter(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && popped) closeLetter(); });
+
+  window.addEventListener('resize', render);
+  narrow.addEventListener('change', render);
+  render();
   settle();
 })();
 </script>
