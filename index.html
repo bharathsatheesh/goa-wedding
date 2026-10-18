@@ -163,18 +163,29 @@ p { margin: 0; }
   .mandala-bl { animation-direction: reverse; }
 }
 @keyframes turn { to { transform: rotate(360deg); } }
-/* Sections and headings rise and fade in as they scroll into view (JS adds .reveal). */
-.reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1); }
+/* As you scroll, text rises and fades in from below, and section titles arrive letter by letter.
+   JS adds .reveal / .split only to things below the fold, so nothing animates on load. */
+.reveal { opacity: 0; transform: translateY(44px); transition: opacity 1s ease, transform 1.1s cubic-bezier(.16,.8,.24,1); }
 .reveal.in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+.split .w { display: inline-block; white-space: nowrap; }
+.split .ch {
+  display: inline-block; opacity: 0; transform: translateY(.9em) rotate(8deg);
+  transition: opacity .6s ease, transform .8s cubic-bezier(.16,.8,.24,1);
+  transition-delay: calc(var(--i) * 45ms);
+}
+.split.in .ch { opacity: 1; transform: none; }
+/* Phones set to reduce motion still get a gentle fade, without the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .split .ch { transform: none; transition-property: opacity; }
+}
 .eyebrow {
-  font-family: var(--font-head); font-weight: 700; font-size: 1.1875rem;
+  font-family: var(--font-head); font-weight: 400; font-size: 1.1875rem;
   letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
 }
 .names { margin: 0; width: min(100%, 640px); }
 .names img { width: 100%; height: auto; }
 .lede { font-size: 1.0625rem; line-height: 1.6; max-width: 46rem; text-wrap: balance; }
-.when { font-family: var(--font-text); font-weight: 600; font-size: 0.875rem; letter-spacing: 0.16em; text-transform: uppercase; }
+.when { font-family: var(--font-text); font-weight: 400; font-size: 0.875rem; letter-spacing: 0.16em; text-transform: uppercase; }
 .when span { white-space: nowrap; }
 
 /* ---------- rsvp card ---------- */
@@ -267,9 +278,31 @@ p { margin: 0; }
 .airport { border: 1px solid var(--rule); border-radius: 14px; padding: 16px 18px; display: grid; gap: 4px; min-width: 0; }
 .airport .code { font-family: var(--font-text); font-weight: 700; font-size: 1.75rem; letter-spacing: 0.08em; color: var(--gold); line-height: 1.1; }
 .airport .drive { font-family: var(--font-text); font-weight: 600; font-size: var(--fs-label); letter-spacing: 0.1em; text-transform: uppercase; }
-.tips { display: grid; gap: 24px; margin-top: 32px; }
-.tip { display: grid; gap: 6px; }
-.tip h3 { font-size: 1.1875rem; }
+/* Everything after the airports folds into an accordion. */
+.accordion { margin-top: 32px; border-top: 1px solid var(--rule); }
+.acc { border-bottom: 1px solid var(--rule); }
+.acc summary {
+  list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 18px 2px; cursor: pointer;
+  font-family: var(--font-head); font-size: 1.1875rem; line-height: 1.3;
+}
+.acc summary::-webkit-details-marker { display: none; }
+.acc summary:hover { color: var(--gold); }
+/* A gold plus that turns into a cross when open. */
+.acc summary::after {
+  content: ""; width: 14px; height: 14px; flex: none; transition: transform .3s ease;
+  background:
+    linear-gradient(var(--gold), var(--gold)) center / 100% 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) center / 2px 100% no-repeat;
+}
+.acc[open] summary::after { transform: rotate(45deg); }
+.acc-body { display: grid; gap: 12px; padding: 0 2px 24px; }
+@media (prefers-reduced-motion: no-preference) {
+  .acc[open] .acc-body { animation: acc-in .45s ease both; }
+}
+@keyframes acc-in { from { opacity: 0; transform: translateY(-8px); } }
+.stay-photo { margin: 6px 0 4px; }
+.stay-photo img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 14px; background: var(--ground); }
 .places { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 12px; }
 .places li { display: grid; gap: 2px; }
 .places strong { font-weight: 600; }
@@ -287,8 +320,19 @@ p { margin: 0; }
 
 /* ---------- celebration rain ---------- */
 .rain { position: fixed; inset: 0; z-index: 50; pointer-events: none; overflow: hidden; }
-.rain img { position: absolute; top: -60px; width: var(--size); height: auto; animation: fall var(--dur) cubic-bezier(.3,.1,.6,1) var(--delay) forwards; }
-@keyframes fall { to { transform: translate3d(var(--drift), 115vh, 0) rotate(var(--spin)); } }
+.rain .drop { position: absolute; top: -90px; animation: fall var(--dur) cubic-bezier(.3,.1,.6,1) var(--delay) both; }
+.rain .drop img { width: var(--size); height: auto; max-width: none; }
+.rain .sari img { transform-origin: 50% 30%; animation: sway 1.1s ease-in-out var(--delay) infinite alternate both; }
+.rain .jutti img { animation: tumble 2.4s linear var(--delay) infinite; }
+@keyframes fall { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(var(--drift), calc(100vh + 180px), 0); } }
+@keyframes sway { from { transform: rotate(-14deg); } to { transform: rotate(14deg); } }
+@keyframes tumble { to { transform: rotate(var(--turn)); } }
+/* Reduced motion: they fade in where they are and fade out, no falling. */
+@media (prefers-reduced-motion: reduce) {
+  .rain .drop { top: auto; bottom: 8vh; animation: pop 3s ease var(--delay) both; }
+  .rain .drop img { animation: none; }
+}
+@keyframes pop { 0% { opacity: 0; } 20%, 70% { opacity: 1; } 100% { opacity: 0; } }
 
 /* ---------- footer ---------- */
 footer { text-align: center; }
@@ -302,6 +346,21 @@ footer img { width: 72px; height: auto; }
 }
 @media (max-width: 420px) {
   .timeline li { grid-template-columns: 1fr; }
+}
+/* Phones: everything a size smaller. Form fields stay at 16px so iPhones don't zoom in on them. */
+@media (max-width: 600px) {
+  :root { --fs-body: 0.9375rem; --fs-small: 0.84375rem; --fs-label: 0.75rem; --fs-title: 1.25rem; --fs-h3: 1.25rem; }
+  body { line-height: 1.62; }
+  .band { padding-block: 52px; }
+  .section-title { margin-bottom: 22px; }
+  .eyebrow { font-size: 1rem; }
+  .lede { font-size: 0.96875rem; }
+  .when { font-size: 0.78125rem; }
+  .what-col h3, .acc summary { font-size: 1.0625rem; }
+  .guest legend { font-size: 1.125rem; }
+  .airport .code { font-size: 1.5rem; }
+  .btn { font-size: 0.8125rem; }
+  .choice label { font-size: 0.8125rem; }
 }
 </style>
 </head>
@@ -323,7 +382,7 @@ footer img { width: 72px; height: auto; }
   <div class="wrap">
     <p class="eyebrow">Save the date</p>
     <h1 class="names"><img src="img/names.png" alt="Anushri &amp; Bharath" width="1400" height="298"></h1>
-    <p class="lede">We can't wait to get married and celebrate with you in Goa, India. Your presence in our lives means so much, and your stay is booked, on us.</p>
+    <p class="lede">We can't wait to celebrate our marriage with you in Goa, India. Your stay is on us.</p>
     <p class="when"><span>30–31 March 2027</span> · <span>Morjim, North Goa</span></p>
     <a class="btn" href="#rsvp">RSVP</a>
   </div>
@@ -360,6 +419,7 @@ footer img { width: 72px; height: auto; }
     <div class="wrap stack">
       <h2 class="section-title" id="stay-title">Where we'll be</h2>
       <h3>Praya Villas, Morjim</h3>
+      <figure class="stay-photo"><img src="img/praya.jpg" alt="A villa living room at Praya, with sofas and armchairs opening onto a garden lawn and pool" width="1280" height="960" loading="lazy"></figure>
       <p>Praya Villas is a set of fourteen Indo-Portuguese style villas right on Morjim Beach in North Goa. Morjim is one of Goa's quieter stretches of sand, and Olive Ridley sea turtles come ashore here to nest.</p>
       <p>Your stay is on us. Everyone stays at <a href="https://www.prayavillas.com/" target="_blank" rel="noopener">Praya</a>, and we'll send your villa and room details closer to the date.</p>
       <dl class="facts">
@@ -386,40 +446,51 @@ footer img { width: 72px; height: auto; }
           <span class="drive">About 1 hr or more to Morjim</span>
         </div>
       </div>
-      <div class="tips">
-        <div class="tip">
-          <h3>Flying from abroad</h3>
-          <p>There are no flights from the US straight to Goa. Most people connect through Mumbai, Delhi or Bengaluru, or through the Gulf; a few Gulf cities, including Dubai, have direct flights to Goa.</p>
-        </div>
-        <div class="tip">
-          <h3>Visas</h3>
-          <p>Most people without an Indian passport or OCI card need an Indian e-Visa from the official site, <a href="https://indianvisaonline.gov.in/evisa/" target="_blank" rel="noopener">indianvisaonline.gov.in</a>. Apply four to six weeks before you fly, around mid-February. The official minimum is four days, but give yourself time to fix any problems. Your passport needs to be valid for at least six months after you arrive.</p>
-        </div>
-        <div class="tip">
-          <h3>Worth a detour</h3>
-          <ul class="places">
-            <li><strong>Ashwem &amp; Mandrem</strong><span class="soft">Quiet beaches just up the coast from Morjim, 10–15 min away.</span></li>
-            <li><strong>Chapora Fort</strong><span class="soft">Clifftop fort ruins with views over the river mouth, about 20 min away.</span></li>
-            <li><strong>Arambol</strong><span class="soft">A laid-back beach town with a sunset drum circle, about 30 min north.</span></li>
-            <li><strong>Anjuna &amp; Vagator</strong><span class="soft">Beach cafes and shacks; Anjuna's flea market runs on Wednesdays.</span></li>
-            <li><strong>Fontainhas, Panjim</strong><span class="soft">Goa's old Latin quarter of Portuguese-era houses, about an hour away.</span></li>
-            <li><strong>Old Goa</strong><span class="soft">UNESCO-listed churches, including the Basilica of Bom Jesus.</span></li>
-            <li><strong>Further afield</strong><span class="soft">Kerala's backwaters and Kochi are a short flight away. Hampi's ruins and Gokarna's beaches are long drives, so plan an overnight.</span></li>
-          </ul>
-        </div>
-        <div class="tip">
-          <h3>Staying safe</h3>
-          <ul class="places">
-            <li><strong>In the sea</strong><span class="soft">Currents can be strong. Swim only where lifeguards have set out flags, and not after drinks or after dark.</span></li>
-            <li><strong>On the road</strong><span class="soft">Scooters are everywhere, but you need an International Driving Permit and a helmet. Take a taxi at night.</span></li>
-            <li><strong>Going out</strong><span class="soft">Stick to busy, well-lit places, keep an eye on your drink, and book cabs through your hotel or a prepaid counter rather than hailing one.</span></li>
-            <li><strong>Travelling on</strong><span class="soft">The US State Department advises women not to travel alone in India. If you're adding Delhi, Agra or Rajasthan, go with friends or a guided tour rather than solo.</span></li>
-          </ul>
-        </div>
-        <div class="tip">
-          <h3>Time zone</h3>
-          <p>Goa runs on India Standard Time, UTC+5:30: nine and a half hours ahead of New York in late March.</p>
-        </div>
+      <div class="accordion">
+        <details class="acc">
+          <summary>Flying from abroad</summary>
+          <div class="acc-body">
+            <p>There are no flights from the US straight to Goa. Most people connect through Mumbai, Delhi or Bengaluru, or through the Gulf; a few Gulf cities, including Dubai, have direct flights to Goa.</p>
+          </div>
+        </details>
+        <details class="acc">
+          <summary>Visas</summary>
+          <div class="acc-body">
+            <p>Most people without an Indian passport or OCI card need an Indian e-Visa from the official site, <a href="https://indianvisaonline.gov.in/evisa/" target="_blank" rel="noopener">indianvisaonline.gov.in</a>. Apply four to six weeks before you fly, around mid-February. The official minimum is four days, but give yourself time to fix any problems. Your passport needs to be valid for at least six months after you arrive.</p>
+          </div>
+        </details>
+        <details class="acc">
+          <summary>Places to see in Goa</summary>
+          <div class="acc-body">
+            <ul class="places">
+              <li><strong>Ashwem &amp; Mandrem</strong><span class="soft">Quiet beaches just up the coast from Morjim, 10–15 min away.</span></li>
+              <li><strong>Chapora Fort</strong><span class="soft">Clifftop fort ruins with views over the river mouth, about 20 min away.</span></li>
+              <li><strong>Arambol</strong><span class="soft">A laid-back beach town with a sunset drum circle, about 30 min north.</span></li>
+              <li><strong>Anjuna &amp; Vagator</strong><span class="soft">Beach cafes and shacks; Anjuna's flea market runs on Wednesdays.</span></li>
+              <li><strong>Fontainhas, Panjim</strong><span class="soft">Goa's old Latin quarter of Portuguese-era houses, about an hour away.</span></li>
+              <li><strong>Old Goa</strong><span class="soft">UNESCO-listed churches, including the Basilica of Bom Jesus.</span></li>
+            </ul>
+          </div>
+        </details>
+        <details class="acc">
+          <summary>Travelling on</summary>
+          <div class="acc-body">
+            <p>By late March most of India is hot: Delhi, Agra, Rajasthan and Hampi are often in the mid-30s °C (mid-90s °F). If you're adding a trip, the hills are cooler and lovely in spring.</p>
+            <ul class="places">
+              <li><strong>Munnar, Kerala</strong><span class="soft">Rolling tea estates high in the Western Ghats. Fly to Kochi, then about 4 hours by road.</span></li>
+              <li><strong>Ooty, Tamil Nadu</strong><span class="soft">An old hill town in the Nilgiris, with a heritage toy train up the mountain. Fly to Coimbatore, then about 3 hours by road.</span></li>
+              <li><strong>Darjeeling &amp; Sikkim</strong><span class="soft">Tea gardens, Himalayan views and rhododendrons in bloom. Fly to Bagdogra, then 3–5 hours by road.</span></li>
+              <li><strong>Dharamshala &amp; McLeod Ganj</strong><span class="soft">Himalayan foothills with Tibetan monasteries, cafes and mountain walks. Fly to Kangra via Delhi.</span></li>
+            </ul>
+            <p class="soft">The US State Department advises women not to travel alone in India, so go with friends or a guided tour rather than solo.</p>
+          </div>
+        </details>
+        <details class="acc">
+          <summary>Time zone</summary>
+          <div class="acc-body">
+            <p>Goa runs on India Standard Time, UTC+5:30: nine and a half hours ahead of New York in late March.</p>
+          </div>
+        </details>
       </div>
     </div>
   </section>
@@ -499,42 +570,94 @@ const CONFIG = {
   }
   const allEvents = () => Object.fromEntries(CONFIG.events.map((e) => [e.id, true]));
 
-  // Little outfits for the celebration rain (simple drawings in the card's colours).
-  const OUTFITS = [
-    // lehenga
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M14 4h12l2 7H12z" fill="#D1426F"/><path d="M14 11h12l10 25H4z" fill="#F0E064"/><path d="M5.6 32h28.8l1.6 4H4z" fill="#D1426F"/><circle cx="14" cy="22" r="1.4" fill="#D1426F"/><circle cx="20" cy="26" r="1.4" fill="#D1426F"/><circle cx="26" cy="22" r="1.4" fill="#D1426F"/></svg>',
-    // kurta
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M13 4l4-1 3 3 3-3 4 1 7 9-4 3-3-4v24H13V12l-3 4-4-3z" fill="#2E9896" stroke="#0F3F3E" stroke-width="1.2"/><path d="M20 6v10" stroke="#F0E064" stroke-width="1.6"/><circle cx="20" cy="9" r="1" fill="#F0E064"/><circle cx="20" cy="13" r="1" fill="#F0E064"/><path d="M13 32h14" stroke="#F0E064" stroke-width="2"/></svg>',
-    // sari
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M12 6h16l4 30H8z" fill="#D1426F"/><path d="M12 6l20 30h-7L12 17z" fill="#F0E064"/><path d="M8.6 32h22.8l.6 4H8z" fill="#F0E064"/></svg>',
-    // jhumka earring
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="7" r="4" fill="#F0E064" stroke="#0F3F3E" stroke-width="1"/><path d="M20 11v4" stroke="#0F3F3E" stroke-width="1.2"/><path d="M9 28a11 11 0 0 1 22 0z" fill="#F0E064" stroke="#0F3F3E" stroke-width="1"/><circle cx="12" cy="31" r="1.6" fill="#D1426F"/><circle cx="17" cy="32" r="1.6" fill="#D1426F"/><circle cx="23" cy="32" r="1.6" fill="#D1426F"/><circle cx="28" cy="31" r="1.6" fill="#D1426F"/></svg>',
-    // jutti shoe
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M4 26c0-5 6-8 12-8 4 0 6 3 10 3 5 0 8-6 10-4 1 2-3 9-10 11-8 2-22 2-22-2z" fill="#F0E064" stroke="#0F3F3E" stroke-width="1.2"/><path d="M8 22c3-2 6-3 9-2" stroke="#D1426F" stroke-width="2" fill="none"/><circle cx="22" cy="25" r="1.6" fill="#D1426F"/></svg>',
-  ].map((svg) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
+  // Little women in saris (one arm up, dancing) and juttis, as SVG strings.
+  const INK = '#0F3F3E';
+  function woman(c, flip) {
+    // c: {sari, shade, border, blouse, skin}; flip mirrors her so the raised arm is on the other side
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 68">
+    <g ${flip ? 'transform="translate(44 0) scale(-1 1)" ' : ''}stroke="${INK}" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M13.5 22.5 L7.5 13 L5.5 6.5" fill="none" stroke="${c.skin}" stroke-width="3.2"/>
+      <path d="M5 8.5 h2.4 M5.6 10.6 h2.4" stroke="#F0E064" stroke-width="1.3"/>
+      <circle cx="5.2" cy="5.4" r="1.9" fill="${c.skin}" stroke="none"/>
+      <circle cx="26.6" cy="7.6" r="3.4" fill="#22140F"/>
+      <circle cx="28.6" cy="5.2" r="1" fill="#fff" stroke="none"/><circle cx="29.6" cy="7.6" r="1" fill="#fff" stroke="none"/><circle cx="28.9" cy="10" r="1" fill="#fff" stroke="none"/>
+      <rect x="19.6" y="15.5" width="4.8" height="5" fill="${c.skin}" stroke="none"/>
+      <circle cx="22" cy="11" r="5.6" fill="${c.skin}"/>
+      <path d="M16.4 11 C16.4 4.6 27.6 4.6 27.6 11 C25.5 8.2 22 7.6 22 7.6 C22 7.6 18.5 8.2 16.4 11 Z" fill="#22140F"/>
+      <circle cx="22" cy="10.2" r="0.75" fill="#D1426F" stroke="none"/>
+      <path d="M14 21.5 Q22 18.6 30 21.5 L28.6 30 H15.4 Z" fill="${c.blouse}"/>
+      <path d="M15.4 30 H28.6 L28.9 32.6 H15.1 Z" fill="${c.skin}"/>
+      <path d="M15.1 32.6 H28.9 L35 62 Q22 64.6 9 62 Z" fill="${c.sari}"/>
+      <path d="M9.6 59 Q22 61.6 34.4 59 L35 62 Q22 64.6 9 62 Z" fill="${c.border}"/>
+      <path d="M20 35 L18.2 60.4 M22 35 L22 61 M24 35 L25.8 60.4" fill="none" stroke="${c.shade}" stroke-width="1"/>
+      <path d="M15.2 33 L29.6 20.8 L33 22.4 L37.8 46 L32.6 47.4 L29.4 27.8 L19.4 36.2 Z" fill="${c.sari}"/>
+      <path d="M32.6 47.4 L37.8 46 L37.4 43.8 L32.2 45.2 Z" fill="${c.border}"/>
+      <path d="M30.6 22 L33.6 23.6" fill="none" stroke="${c.border}" stroke-width="1.6"/>
+      <path d="M17.3 34.3 L29.9 23.6" fill="none" stroke="${c.border}" stroke-width="1.4"/>
+      <path d="M13.2 62.6 q2 2.2 4.4 0.2 M26.4 62.8 q2.4 2 4.4 -0.2" fill="none" stroke="${c.skin}" stroke-width="2.2"/>
+    </g></svg>`;
+  }
+  function jutti(c) {
+    // c: {body, emb}: side view, open back, embroidered toe box, curled tip
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 30">
+    <g stroke="${INK}" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M3 24.5 Q3 19 6.5 16.5 L12 19 Q17 19.4 20.5 13 Q32 9.5 42 17 Q47 19.5 50 14.5 Q52.5 9.8 49.5 8.6 Q47.6 8.2 47.8 10.6 Q51 11 48.2 16.6 Q45 23.6 36 25.4 Q18 27.6 3 24.5 Z" fill="${c.body}"/>
+      <path d="M6.5 16.5 Q9.5 21.6 13.4 21.2 Q18.6 20.6 20.5 13 Q17 19.4 12 19 Z" fill="#3A1426"/>
+      <path d="M3 24.5 Q20 28 36 25.4 Q45.6 23.4 48.6 16.4" fill="none" stroke="${INK}" stroke-width="2.4"/>
+      <path d="M3.4 25 L3.4 27.4 Q6 28.2 8.6 27.6 L8.8 25.6" fill="${INK}"/>
+      <path d="M21.6 14.8 Q31.6 12.2 41.6 19" fill="none" stroke="${c.emb}" stroke-width="1.8"/>
+      <circle cx="30.5" cy="17.5" r="1.45" fill="${c.emb}" stroke="none"/><circle cx="33.1" cy="19.4" r="1.45" fill="${c.emb}" stroke="none"/><circle cx="32.1" cy="22.4" r="1.45" fill="${c.emb}" stroke="none"/><circle cx="28.9" cy="22.4" r="1.45" fill="${c.emb}" stroke="none"/><circle cx="27.9" cy="19.4" r="1.45" fill="${c.emb}" stroke="none"/>
+      <circle cx="30.5" cy="20.2" r="1.25" fill="#D1426F" stroke="none"/>
+      <circle cx="23.4" cy="20.4" r="1.05" fill="${c.emb}" stroke="none"/><circle cx="38.4" cy="21.6" r="1.05" fill="${c.emb}" stroke="none"/><circle cx="42.6" cy="19.6" r="0.9" fill="${c.emb}" stroke="none"/>
+      <path d="M13.4 21.2 Q18 21.6 21.4 16.4" fill="none" stroke="${c.emb}" stroke-width="1"/>
+    </g></svg>`;
+  }
+  const SARIS = [
+    { sari: '#D1426F', shade: '#A8325A', border: '#F0E064', blouse: '#F0E064', skin: '#C68642' },   // rose, gold border
+    { sari: '#FFF6E0', shade: '#E2C98A', border: '#E2B33C', blouse: '#D1426F', skin: '#8D5524' },   // Kerala kasavu: cream, gold border
+    { sari: '#F08A24', shade: '#C96E14', border: '#D1426F', blouse: '#D1426F', skin: '#E0AC69' },   // saffron, rose border
+    { sari: '#7B2D8E', shade: '#5E2070', border: '#F0E064', blouse: '#F0E064', skin: '#A66A3A' },   // purple, gold border
+  ];
+  const JUTTIS = [
+    { body: '#D1426F', emb: '#F0E064' },
+    { body: '#F0E064', emb: '#D1426F' },
+    { body: '#FFF6E0', emb: '#E2B33C' },
+    { body: '#7B2D8E', emb: '#F0E064' },
+  ];
 
+  // Celebration rain when someone says they're coming: little women in saris, dancing, and tumbling juttis.
   function celebrate() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const uri = (svg) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
     const rain = document.createElement('div');
     rain.className = 'rain';
     rain.setAttribute('aria-hidden', 'true');
-    const n = window.innerWidth < 600 ? 40 : 70;
+    const n = window.innerWidth < 600 ? 34 : 60;
+    const rnd = (lo, hi) => lo + Math.random() * (hi - lo);
     for (let i = 0; i < n; i++) {
+      const isSari = Math.random() < 0.6;
+      const drop = document.createElement('span');
+      drop.className = 'drop ' + (isSari ? 'sari' : 'jutti');
       const img = document.createElement('img');
-      img.src = OUTFITS[i % OUTFITS.length];
       img.alt = '';
-      img.style.left = (Math.random() * 100) + 'vw';
-      img.style.setProperty('--size', (22 + Math.random() * 22) + 'px');
-      img.style.setProperty('--dur', (2.6 + Math.random() * 2) + 's');
-      img.style.setProperty('--delay', (Math.random() * 1.4) + 's');
-      img.style.setProperty('--drift', ((Math.random() - 0.5) * 30) + 'vw');
-      img.style.setProperty('--spin', ((Math.random() - 0.5) * 720) + 'deg');
-      rain.appendChild(img);
+      if (isSari) {
+        img.src = uri(woman(SARIS[i % SARIS.length], Math.random() < 0.5));
+        drop.style.setProperty('--size', (rnd(46, 68) * 44 / 68) + 'px');
+        drop.style.setProperty('--dur', rnd(3.6, 5.6) + 's');
+      } else {
+        img.src = uri(jutti(JUTTIS[i % JUTTIS.length]));
+        drop.style.setProperty('--size', rnd(44, 62) + 'px');
+        drop.style.setProperty('--dur', rnd(2.8, 4.4) + 's');
+        drop.style.setProperty('--turn', (Math.random() < 0.5 ? -360 : 360) + 'deg');
+      }
+      drop.style.left = rnd(-4, 96) + 'vw';
+      drop.style.setProperty('--delay', rnd(0, 1.6) + 's');
+      drop.style.setProperty('--drift', rnd(-14, 14) + 'vw');
+      drop.appendChild(img);
+      rain.appendChild(drop);
     }
     document.body.appendChild(rain);
-    setTimeout(() => rain.remove(), 6500);
+    setTimeout(() => rain.remove(), 8000);
   }
-
 
   /* ---------- static sections ---------- */
   document.getElementById('rsvp-by').textContent = 'Please RSVP by ' + CONFIG.rsvpBy + '.';
@@ -745,18 +868,41 @@ const CONFIG = {
   }
   load();
 
-  // Fade sections and headings in from below as they arrive.
-  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  // As you scroll down, text rises in from below and section titles arrive letter by letter.
+  // Only things that start below the fold get this, so nothing moves on load.
+  function splitTitle(el) {
+    const text = el.textContent.trim();
+    let i = 0;
+    const words = text.split(/\s+/).map((w) => '<span class="w">' +
+      [...w].map((c) => `<span class="ch" style="--i:${i++}">${esc(c)}</span>`).join('') + '</span>');
+    el.innerHTML = `<span class="sr-only">${esc(text)}</span><span aria-hidden="true">${words.join(' ')}</span>`;
+    el.classList.add('split');
+  }
+  if ('IntersectionObserver' in window) {
+    const fold = window.innerHeight * 0.92;
+    const below = (el) => el.getBoundingClientRect().top > fold;
     const targets = [];
-    document.querySelectorAll('.hero .wrap > *').forEach((el, i) => { el.classList.add('reveal'); el.style.transitionDelay = (i * 120) + 'ms'; targets.push(el); });
     document.querySelectorAll('main .band .wrap > *, footer .wrap > *').forEach((el) => {
-      const kids = el.matches('.timeline, .tips, .airports') ? [...el.children] : [el];
-      kids.forEach((k, i) => { k.classList.add('reveal'); k.style.transitionDelay = Math.min(i * 90, 360) + 'ms'; targets.push(k); });
+      if (el.matches('.section-title')) { if (below(el)) { splitTitle(el); targets.push(el); } return; }
+      const kids = el.matches('.timeline, .accordion, .airports') ? [...el.children] : [el];
+      kids.forEach((k, i) => {
+        if (!below(k)) return;
+        k.classList.add('reveal');
+        k.style.transitionDelay = Math.min(i * 110, 440) + 'ms';
+        targets.push(k);
+      });
     });
     const io = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-    }), { rootMargin: '0px 0px -6% 0px', threshold: 0.08 });
+    }), { rootMargin: '0px 0px -12% 0px', threshold: 0 });
     targets.forEach((t) => io.observe(t));
+    // The last lines of the page can't scroll up past that line, so show them once you reach the bottom.
+    const atBottom = () => {
+      if (window.scrollY + window.innerHeight < document.documentElement.scrollHeight - 40) return;
+      targets.forEach((t) => { if (!t.classList.contains('in')) { t.classList.add('in'); io.unobserve(t); } });
+      window.removeEventListener('scroll', atBottom);
+    };
+    window.addEventListener('scroll', atBottom, { passive: true });
   }
 
   const nav = document.querySelector('.nav');
