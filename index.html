@@ -210,8 +210,8 @@ p { margin: 0; }
 }
 .guest { border: 0; margin: 0; padding: 20px 0 0; border-top: 1px solid var(--ink-rule); display: grid; gap: 14px; min-width: 0; }
 .guest:first-of-type { border-top: 0; padding-top: 0; }
-.guest legend { padding: 0; font-family: var(--font-head); font-size: 1.25rem; font-weight: 400; float: left; width: 100%; }
-.guest legend + * { clear: both; }
+.guest > legend { padding: 0; font-family: var(--font-head); font-size: 1.25rem; font-weight: 400; float: left; width: 100%; }
+.guest > legend + * { clear: both; }
 .choices { display: flex; flex-wrap: wrap; gap: 10px; }
 .choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .choice label {
@@ -220,17 +220,15 @@ p { margin: 0; }
   font-family: var(--font-text); font-weight: 600; font-size: 0.875rem;
   background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink-rule);
 }
-.choice label::before {
-  content: ""; width: 14px; height: 14px; border-radius: 50%; flex: none;
-  box-shadow: inset 0 0 0 1.5px var(--ink-soft);
-}
-.choice.check label::before { border-radius: 4px; }
-.choice input:checked + label { background: var(--ground); color: var(--on-ground); box-shadow: none; }
-.choice input:checked + label::before { background: var(--gold); box-shadow: none; }
+.choice input:checked + label { background: var(--ground); color: #fff; box-shadow: none; }
+.choice input:checked + label:hover { filter: brightness(1.06); }
 .choice input:focus-visible + label { outline: 3px solid var(--ground); outline-offset: 2px; }
-.sub { display: grid; gap: 10px; }
+.sub { display: grid; gap: 16px; }
 .field { display: grid; gap: 6px; }
-.field label { font-family: var(--font-text); font-weight: 600; font-size: var(--fs-label); color: var(--ink); }
+.field label, .field-label { font-family: var(--font-text); font-weight: 600; font-size: var(--fs-label); color: var(--ink); }
+.diet { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.diet legend { padding: 0; margin-bottom: 8px; }
+.req { color: var(--error); font-weight: 700; }
 .field input, .field textarea {
   width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: #fff;
   border: 1.5px solid var(--ink-rule); border-radius: 10px; padding: 10px 12px;
@@ -360,7 +358,7 @@ footer img { width: 72px; height: auto; }
   .lede { font-size: 0.96875rem; }
   .when { font-size: 0.78125rem; }
   .what-col h3, .acc summary { font-size: 1.0625rem; }
-  .guest legend { font-size: 1.125rem; }
+  .guest > legend { font-size: 1.125rem; }
   .airport .code { font-size: 1.5rem; }
   .btn { font-size: 0.8125rem; }
   .choice label { font-size: 0.8125rem; }
@@ -403,7 +401,7 @@ footer img { width: 72px; height: auto; }
       <p class="rsvp-by soft" id="rsvp-by"></p>
       <div class="plus-ones stack">
         <h3>Plus-ones</h3>
-        <p class="soft">Due to the venue being only a 60-person capacity, we ask that only guests specifically included on the invitation attend. Thank you for understanding and being part of our intimate celebration.</p>
+        <p class="soft">Due to the venue being only a 60-person capacity, we ask that only guests specifically included on the invitation attend. Thank you for helping us keep the gathering intimate and being part of the celebration!</p>
       </div>
     </div>
   </section>
@@ -522,8 +520,9 @@ const CONFIG = {
   // Paste your Apps Script web-app URL (it ends in /exec). Leave '' for preview mode.
   apiUrl: 'https://script.google.com/macros/s/AKfycbzQVbK2J8b1ocpekvGU_jHe05g7gpj9d75JbU8IlY2M5UgZ1cfIwW-ZeFpJAoU5SxjF/exec',
   rsvpBy: '31 October 2026',
-  // Asks each guest who's coming for dietary preferences.
+  // Asks each guest who's coming for dietary preferences, as pills they can tick.
   askDietary: true,
+  diets: ['Vegetarian', 'Vegan', 'Jain', 'Gluten-free', 'Lactose intolerant', 'Allergic to nuts'],
   // Event ids must match the EVENTS list in Code.gs. An event can also take photo: 'img/…', alt: '…'.
   events: [
     { id: 'sangeet', name: 'Sangeet', day: 'Tue 30 March', time: 'Evening',
@@ -540,7 +539,8 @@ const CONFIG = {
     { src: 'img/photo-2.jpg', w: 1200, h: 1600, alt: 'Anushri and Bharath on a balcony above a turquoise sea', caption: '' },
     { src: 'img/photo-3.jpg', w: 1600, h: 1200, alt: 'Anushri and Bharath hugging in a cosy bar decorated with wreaths', caption: '' },
     { src: 'img/photo-4.jpg', w: 1600, h: 1200, alt: 'Anushri smiling in a green beanie while Bharath strikes a pose on a misty trail', caption: '' },
-    { src: 'img/photo-5.jpg', w: 1200, h: 1600, alt: 'Their black-and-white cat stretched out in a cardboard box', caption: '' },
+    { src: 'img/photo-5.jpg', w: 1200, h: 1600, alt: 'Anushri and Bharath in costume, flexing beside a tree of paper butterflies', caption: '' },
+    { src: 'img/photo-6.jpg', w: 1200, h: 1600, alt: 'Their black-and-white cat stretched out in a cardboard box', caption: '' },
   ],
 };
 
@@ -568,6 +568,16 @@ const CONFIG = {
       else out[cur] = out[cur] ? out[cur] + '\n' + line : line;
     });
     return out;
+  }
+  // Splits a saved dietary answer into the pills it matches and anything else typed earlier.
+  function splitDiet(text) {
+    const parts = String(text || '').split(',').map((x) => x.trim()).filter(Boolean);
+    const picked = [], other = [];
+    parts.forEach((x) => {
+      const d = CONFIG.diets.find((y) => y.toLowerCase() === x.toLowerCase());
+      if (d) picked.push(d); else other.push(x);
+    });
+    return { picked, other };
   }
   const allEvents = () => Object.fromEntries(CONFIG.events.map((e) => [e.id, true]));
 
@@ -721,12 +731,14 @@ const CONFIG = {
     const many = state.guests.length > 1;
     const guestsHtml = state.guests.map((g, i) => {
       const yes = g.attending === 'yes';
+      const picked = splitDiet(g.dietary).picked;
       const dietary = CONFIG.askDietary ? `
-        <div class="field"><label for="g${i}-diet">Dietary preferences (optional)</label>
-          <input id="g${i}-diet" type="text" maxlength="200" value="${esc(g.dietary || '')}" placeholder="e.g. vegetarian, Jain, no nuts"></div>` : '';
+        <fieldset class="diet"><legend class="field-label">Dietary preferences</legend>
+          <div class="choices">${CONFIG.diets.map((d, k) => `<span class="choice check"><input type="checkbox" id="g${i}-d${k}" value="${esc(d)}" ${picked.includes(d) ? 'checked' : ''}><label for="g${i}-d${k}">${esc(d)}</label></span>`).join('')}</div>
+        </fieldset>` : '';
       const email = `
-        <div class="field"><label for="g${i}-email">Email (optional)</label>
-          <input id="g${i}-email" type="email" autocomplete="${i === 0 ? 'email' : 'off'}" maxlength="200" value="${esc(g.email || '')}" placeholder="For updates closer to the date"></div>`;
+        <div class="field"><label for="g${i}-email">Email <span class="req" aria-hidden="true">*</span></label>
+          <input id="g${i}-email" type="email" required autocomplete="${i === 0 ? 'email' : 'off'}" maxlength="200" value="${esc(g.email || '')}" placeholder="For updates closer to the date"></div>`;
       return `
       <fieldset class="guest" data-i="${i}">
         <legend>${esc(g.name)}</legend>
@@ -736,8 +748,8 @@ const CONFIG = {
         </div>
         <div class="sub" id="g${i}-more" ${yes ? '' : 'hidden'}>
           ${email}
-          <div class="choices"><span class="choice check"><input type="checkbox" id="g${i}-perform" ${g.perform ? 'checked' : ''}><label for="g${i}-perform">Count me in for a sangeet act</label></span></div>
           ${dietary}
+          <div class="choices"><span class="choice check"><input type="checkbox" id="g${i}-perform" ${g.perform ? 'checked' : ''}><label for="g${i}-perform">Count me in for a sangeet act</label></span></div>
         </div>
       </fieldset>`;
     }).join('');
@@ -746,17 +758,13 @@ const CONFIG = {
       ${previewNote()}
       <div class="stack" style="gap:6px">
         <h3>Hi ${esc(names)}!</h3>
-        <p class="muted">${many ? 'Let us know for each of you.' : 'Let us know if you can make it.'}</p>
+        <p class="muted">${many ? 'Let us know for each of you.' : 'Let us know if you can make it.'} Fields marked <span class="req" aria-hidden="true">*</span><span class="sr-only">with a star</span> are required.</p>
       </div>
       <form id="rsvp-form" class="stack" style="gap:22px" novalidate>
         ${guestsHtml}
         <div class="field">
-          <label for="accom">Accommodation requests (optional)</label>
-          <textarea id="accom" maxlength="450" placeholder="Arriving early or staying on, a ground-floor room, a cot for a little one, anything that helps">${esc(state.accom)}</textarea>
-        </div>
-        <div class="field">
-          <label for="note">Anything else? (optional)</label>
-          <textarea id="note" maxlength="450" placeholder="A song request, or a note to us">${esc(state.note)}</textarea>
+          <label for="note">Accommodation requests and anything else</label>
+          <textarea id="note" maxlength="900" placeholder="Arriving early or staying on, a ground-floor room, more about dietary needs, a song request, or a note to us">${esc(state.note)}</textarea>
         </div>
         <p class="error" id="form-error" hidden></p>
         <div class="actions"><button class="btn" type="submit" id="send">Send RSVP</button></div>
@@ -786,7 +794,7 @@ const CONFIG = {
       <h3>${justSent ? 'Thank you, ' + esc(names) + '!' : 'Your RSVP'}</h3>
       <p>${anyYes ? "We can't wait to celebrate with you in Goa." : "We'll miss you, and we'll raise a glass to you in Goa."}</p>
       <ul class="summary">${items}</ul>
-      ${state.accom ? `<p class="muted"><strong>Accommodation requests:</strong> ${esc(state.accom)}</p>` : ''}
+      ${state.note ? `<p class="muted"><strong>Your requests and notes:</strong> ${esc(state.note)}</p>` : ''}
       <div class="actions"><button class="btn secondary" type="button" id="edit">Change answers</button></div>
       <p class="muted">Plans change? Use this same link any time before ${esc(CONFIG.rsvpBy)}.</p>`;
     document.getElementById('edit').addEventListener('click', () => { showForm(); card.querySelector('input')?.focus(); });
@@ -805,14 +813,17 @@ const CONFIG = {
       // One overall answer: coming means coming to everything.
       const events = att === 'yes' ? allEvents() : {};
       const out = { name: g.name, attending: att, events, perform: att === 'yes' && document.getElementById(`g${i}-perform`).checked };
-      if (CONFIG.askDietary) out.dietary = att === 'yes' ? document.getElementById(`g${i}-diet`).value.trim() : '';
+      if (CONFIG.askDietary) {
+        const ticked = CONFIG.diets.filter((d, k) => document.getElementById(`g${i}-d${k}`).checked);
+        out.dietary = att === 'yes' ? ticked.concat(splitDiet(g.dietary).other).join(', ') : '';
+      }
       const emailEl = document.getElementById(`g${i}-email`);
       out.email = att === 'yes' ? emailEl.value.trim() : (g.email || '');
+      if (att === 'yes' && !out.email) return fail(`Add an email for ${firstName(g.name)} so we can send updates.`);
       if (out.email && !emailEl.checkValidity()) return fail(`That email for ${firstName(g.name)} doesn't look right.`);
       guests.push(out);
     }
     const note = document.getElementById('note').value.trim();
-    const accom = document.getElementById('accom').value.trim();
     const btn = document.getElementById('send');
     btn.disabled = true; btn.textContent = 'Sending…';
     try {
@@ -820,13 +831,14 @@ const CONFIG = {
         await new Promise((r) => setTimeout(r, 500));
       } else {
         const emails = guests.filter((x) => x.email).map((x) => firstName(x.name) + ' ' + x.email).join(', ');
-        const body = state.v2 ? { code: state.code, guests, note, accom } : { code: state.code, guests, note: packNote(accom, note, emails) };
+        // Requests and notes now share one box; it goes in the Note column (and clears the old Accommodation one).
+        const body = state.v2 ? { code: state.code, guests, note, accom: '' } : { code: state.code, guests, note: packNote('', note, emails) };
         const res = await call('POST', body);
         if (!res || !res.ok) throw new Error((res && res.error) || 'not saved');
       }
       state.guests = state.guests.map((g, i) => Object.assign({}, g, guests[i]));
       state.note = note;
-      state.accom = accom;
+      state.accom = '';
       showDone(true);
       if (guests.some((x) => x.attending === 'yes')) celebrate();
       card.scrollIntoView({ block: 'nearest' });
@@ -860,8 +872,20 @@ const CONFIG = {
       }
       state.guests = res.guests;
       state.v2 = res.version >= 2;
-      if (state.v2) { state.note = res.note || ''; state.accom = res.accom || ''; }
-      else Object.assign(state, unpackNote(res.note));
+      let accom = '', note = '';
+      if (state.v2) { accom = res.accom || ''; note = res.note || ''; }
+      else {
+        const u = unpackNote(res.note);
+        accom = u.accom; note = u.note;
+        // Older Sheet scripts keep emails in the note as "Priya a@b.com, Rahul c@d.com".
+        u.emails.split(', ').forEach((pair) => {
+          const m = pair.match(/^(\S+) (\S+@\S+)$/);
+          const g = m && state.guests.find((x) => firstName(x.name) === m[1] && !x.email);
+          if (g) g.email = m[2];
+        });
+      }
+      state.note = [accom, note].filter(Boolean).join('\n');
+      state.accom = '';
       if (state.guests.every((g) => g.attending)) showDone(false); else showForm();
     } catch (err) {
       showMessage("We couldn't load your invitation", 'Check your connection and try again.', load);
