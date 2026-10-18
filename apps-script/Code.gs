@@ -31,12 +31,16 @@ const H = {
   attending: 'Attending',
   perform: 'Sangeet act',
   dietary: 'Dietary',
+  email: 'Email',
+  accom: 'Accommodation',
   note: 'Note',
   updated: 'Last updated',
 };
 const HEADERS = [H.household, H.name, H.code, H.link, H.message, H.attending]
   .concat(EVENTS.map(function (e) { return e.header; }))
-  .concat([H.perform, H.dietary, H.note, H.updated]);
+  .concat([H.perform, H.dietary, H.email, H.accom, H.note, H.updated]);
+// Columns added after the first version; table_ creates them if an older Sheet lacks them.
+const ADDED_LATER = ['email', 'accom'];
 
 // ── Menu & one-time setup ──────────────────────────────────────────────────
 function onOpen() {
@@ -134,6 +138,7 @@ function doGet(e) {
   const t = table_(sheet_());
   const guests = [];
   let note = '';
+  let accom = '';
   t.rows.forEach(function (r) {
     if (normCode_(r[t.c.code]) !== code || !String(r[t.c.name]).trim()) return;
     const events = {};
@@ -144,11 +149,13 @@ function doGet(e) {
       events: events,
       perform: r[t.c.perform] === 'Yes',
       dietary: String(r[t.c.dietary] || ''),
+      email: String(r[t.c.email] || ''),
     });
     if (r[t.c.note]) note = String(r[t.c.note]);
+    if (r[t.c.accom]) accom = String(r[t.c.accom]);
   });
   if (!guests.length) return json_({ ok: false, error: 'not_found' });
-  return json_({ ok: true, guests: guests, note: note });
+  return json_({ ok: true, version: 2, guests: guests, note: note, accom: accom });
 }
 
 /** POST {code, guests:[{name, attending, events, perform, dietary?}], note} → saves answers. */
@@ -182,6 +189,8 @@ function doPost(e) {
       EVENTS.forEach(function (ev) { set(ev.id, yes ? (g.events && g.events[ev.id] === true ? 'Yes' : 'No') : ''); });
       if ('perform' in g) set('perform', yes && g.perform === true ? 'Yes' : '');
       if ('dietary' in g) set('dietary', clean_(g.dietary, 200));
+      if ('email' in g) set('email', clean_(g.email, 200));
+      if ('accom' in body) set('accom', clean_(body.accom, 500));
       set('note', note);
       set('updated', now);
       saved++;
@@ -203,8 +212,17 @@ function sheet_() {
 
 /** Reads the Guests tab; c maps keys (and event ids) to 0-based column indexes. */
 function table_(sh) {
-  const values = sh.getDataRange().getValues();
+  let values = sh.getDataRange().getValues();
   const header = values[0].map(function (v) { return String(v).trim(); });
+  let added = false;
+  ADDED_LATER.forEach(function (k) {
+    if (header.indexOf(H[k]) < 0) {
+      sh.getRange(1, header.length + 1).setValue(H[k]).setFontWeight('bold');
+      header.push(H[k]);
+      added = true;
+    }
+  });
+  if (added) values = sh.getDataRange().getValues();
   const c = {};
   Object.keys(H).forEach(function (k) { c[k] = header.indexOf(H[k]); });
   EVENTS.forEach(function (ev) { c[ev.id] = header.indexOf(ev.header); });

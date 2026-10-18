@@ -149,12 +149,12 @@ p { margin: 0; }
 }
 @keyframes turn { to { transform: rotate(360deg); } }
 .eyebrow {
-  font-family: var(--font-text); font-weight: 700; font-size: 1.1875rem;
-  letter-spacing: 0.26em; text-transform: uppercase; color: var(--gold);
+  font-family: var(--font-head); font-weight: 700; font-size: 1.1875rem;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
 }
 .names { margin: 0; width: min(100%, 640px); }
 .names img { width: 100%; height: auto; }
-.lede { font-size: 1.125rem; line-height: 1.6; max-width: 34ch; text-wrap: balance; }
+.lede { font-size: 1.0625rem; line-height: 1.6; max-width: 46rem; text-wrap: balance; }
 .when { font-family: var(--font-text); font-weight: 600; font-size: 0.875rem; letter-spacing: 0.16em; text-transform: uppercase; }
 .when span { white-space: nowrap; }
 
@@ -230,6 +230,9 @@ p { margin: 0; }
 .when-col { display: grid; gap: 2px; padding-top: 4px; align-content: start; }
 .when-col .time { color: var(--gold); }
 .what-col { display: grid; gap: 6px; min-width: 0; }
+.what-col h3 { font-size: 1.1875rem; }
+.ev-photo { margin: 8px 0 0; max-width: 24rem; }
+.ev-photo img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 12px; background: var(--ground-deep); }
 .dress-code { font-size: var(--fs-small); }
 .dress-code .label { color: var(--gold); margin-right: 6px; }
 .outfits { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--rule); }
@@ -249,6 +252,9 @@ p { margin: 0; }
 .tips { display: grid; gap: 24px; margin-top: 32px; }
 .tip { display: grid; gap: 6px; }
 .tip h3 { font-size: 1.1875rem; }
+.places { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 12px; }
+.places li { display: grid; gap: 2px; }
+.places strong { font-weight: 600; }
 
 /* ---------- photos ---------- */
 .photos {
@@ -324,7 +330,7 @@ footer img { width: 72px; height: auto; }
         <h3>Outfit inspiration</h3>
         <p>For the sangeet, go Indian festive: colour, sparkle, and shoes you can dance in. Everything else is semi-formal.</p>
         <ul class="shops">
-          <li><a href="https://www.pinterest.com/search/pins/?q=indian%20festive%20wedding%20guest%20outfits" target="_blank" rel="noopener">Pinterest: Indian festive ideas</a></li>
+          <li><a href="https://www.pinterest.com/pin/502010689731274650/" target="_blank" rel="noopener">Pinterest: Indian festive inspiration</a></li>
           <li><a href="https://www.lashkaraa.com/" target="_blank" rel="noopener">Lashkaraa</a><span class="soft"> · US-based</span></li>
           <li><a href="https://www.kalkifashion.com/" target="_blank" rel="noopener">Kalki Fashion</a></li>
           <li><a href="https://www.azafashions.com/" target="_blank" rel="noopener">Aza Fashions</a><span class="soft"> · designer, ships to the US</span></li>
@@ -339,7 +345,7 @@ footer img { width: 72px; height: auto; }
       <h2 class="section-title" id="stay-title">Where we'll be</h2>
       <h3>Praya Villas, Morjim</h3>
       <p>Praya Villas is a set of fourteen Indo-Portuguese style villas right on Morjim Beach in North Goa. Morjim is one of Goa's quieter stretches of sand, and Olive Ridley sea turtles come ashore here to nest.</p>
-      <p>Your stay is on us. Everyone stays at <a href="https://www.prayavillas.com/" target="_blank" rel="noopener">Praya</a>, and we'll send your villa and room details closer to the date. Coming early or staying on after? Add it under accommodation requests in your RSVP and we'll help you find somewhere nearby.</p>
+      <p>Your stay is on us. Everyone stays at <a href="https://www.prayavillas.com/" target="_blank" rel="noopener">Praya</a>, and we'll send your villa and room details closer to the date.</p>
       <dl class="facts">
         <div class="fact"><dt class="label">Check in</dt><dd>Tue 30 March</dd></div>
         <div class="fact"><dt class="label">Check out</dt><dd>Thu 1 April</dd></div>
@@ -370,12 +376,29 @@ footer img { width: 72px; height: auto; }
           <p>There are no flights from the US straight to Goa. Most people connect through Mumbai, Delhi or Bengaluru, or through the Gulf; a few Gulf cities, including Dubai, have direct flights to Goa.</p>
         </div>
         <div class="tip">
-          <h3>From the airport</h3>
-          <p>Take a prepaid taxi from the counter in arrivals, where the fare is fixed before you leave. GoaMiles, the state's taxi app, is the other reliable option. Uber and Ola run in Goa but can be hard to get at the airports.</p>
-        </div>
-        <div class="tip">
           <h3>Visas</h3>
           <p>Most people without an Indian passport or OCI card need an Indian e-Visa. Apply only on the official site, <a href="https://indianvisaonline.gov.in/evisa/" target="_blank" rel="noopener">indianvisaonline.gov.in</a>; look-alike sites charge extra.</p>
+        </div>
+        <div class="tip">
+          <h3>Worth a detour</h3>
+          <ul class="places">
+            <li><strong>Ashwem &amp; Mandrem</strong><span class="soft">Quiet beaches just up the coast from Morjim, 10–15 min away.</span></li>
+            <li><strong>Chapora Fort</strong><span class="soft">Clifftop fort ruins with views over the river mouth, about 20 min away.</span></li>
+            <li><strong>Arambol</strong><span class="soft">A laid-back beach town with a sunset drum circle, about 30 min north.</span></li>
+            <li><strong>Anjuna &amp; Vagator</strong><span class="soft">Beach cafes and shacks; Anjuna's flea market runs on Wednesdays.</span></li>
+            <li><strong>Fontainhas, Panjim</strong><span class="soft">Goa's old Latin quarter of Portuguese-era houses, about an hour away.</span></li>
+            <li><strong>Old Goa</strong><span class="soft">UNESCO-listed churches, including the Basilica of Bom Jesus.</span></li>
+            <li><strong>Further afield</strong><span class="soft">Kerala's backwaters and Kochi are a short flight away. Hampi's ruins and Gokarna's beaches are long drives, so plan an overnight.</span></li>
+          </ul>
+        </div>
+        <div class="tip">
+          <h3>Staying safe</h3>
+          <ul class="places">
+            <li><strong>In the sea</strong><span class="soft">Currents can be strong. Swim only where lifeguards have set out flags, and not after drinks or after dark.</span></li>
+            <li><strong>On the road</strong><span class="soft">Scooters are everywhere, but you need an International Driving Permit and a helmet. Take a taxi at night.</span></li>
+            <li><strong>Going out</strong><span class="soft">Stick to busy, well-lit places, keep an eye on your drink, and book cabs through your hotel or a prepaid counter rather than hailing one.</span></li>
+            <li><strong>Travelling on</strong><span class="soft">The US State Department advises women not to travel alone in India. If you're adding Delhi, Agra or Rajasthan, go with friends or a guided tour rather than solo.</span></li>
+          </ul>
         </div>
         <div class="tip">
           <h3>Time zone</h3>
@@ -410,15 +433,18 @@ const CONFIG = {
   rsvpBy: '31 October 2026',
   // Asks each guest who's coming for dietary preferences.
   askDietary: true,
-  // Event ids must match the EVENTS list in Code.gs.
+  // Event ids must match the EVENTS list in Code.gs. Photos are free Unsplash images (placeholders).
   events: [
     { id: 'sangeet', name: 'Sangeet', day: 'Tue 30 March', time: 'Evening',
       blurb: "A dance party. Dance, play music, or make fun of us 😉 We'll share how to join a performance soon.",
-      dress: 'Indian festive' },
+      dress: 'Indian festive',
+      photo: 'https://images.unsplash.com/photo-1763184176470-2115508594d3?w=900&q=70&auto=format&fit=crop', alt: 'Colourful garlands and decorations at a market' },
     { id: 'kerala', name: 'Kerala ceremony', day: 'Wed 31 March', time: 'Time to come',
-      blurb: 'A traditional Kerala wedding ceremony.', dress: 'Semi-formal' },
+      blurb: 'A traditional Kerala wedding ceremony.', dress: 'Semi-formal',
+      photo: 'https://images.unsplash.com/photo-1780247584867-d332ed89d423?w=900&q=70&auto=format&fit=crop', alt: 'Strings of white jasmine flowers' },
     { id: 'wedding', name: 'Wedding', day: 'Wed 31 March', time: 'Evening',
-      blurb: 'The North Indian wedding and the celebration after.', dress: 'Semi-formal' },
+      blurb: 'The North Indian wedding and the celebration after.', dress: 'Semi-formal',
+      photo: 'https://images.unsplash.com/photo-1771769076330-c424547f5c1c?w=900&q=70&auto=format&fit=crop', alt: 'Painted pots decorated with red roses and white flowers' },
   ],
   // Add photos to the img folder and list them here. Captions are optional.
   photos: [
@@ -438,17 +464,22 @@ const CONFIG = {
   const firstName = (n) => String(n).trim().split(/\s+/)[0];
   const joinNames = (list) => list.length <= 1 ? (list[0] || '') : list.slice(0, -1).join(', ') + ' & ' + list[list.length - 1];
 
-  let state = { code: null, guests: [], note: '', accom: '' };
+  let state = { code: null, guests: [], note: '', accom: '', v2: false };
 
-  // Accommodation requests and the note share the Sheet's Note column.
-  function packNote(accom, note) {
-    return [accom && 'Accommodation: ' + accom, note && 'Note: ' + note].filter(Boolean).join('\n');
+  // Older Sheet scripts have no Email/Accommodation columns, so those answers ride in the Note column.
+  function packNote(accom, note, emails) {
+    return [accom && 'Accommodation: ' + accom, emails && 'Emails: ' + emails, note && 'Note: ' + note].filter(Boolean).join('\n');
   }
   function unpackNote(raw) {
-    const s = String(raw || '');
-    const m = s.match(/^Accommodation: ([\s\S]*?)(?:\nNote: ([\s\S]*))?$/);
-    if (m) return { accom: m[1], note: m[2] || '' };
-    return { accom: '', note: s.startsWith('Note: ') ? s.slice(6) : s };
+    const out = { accom: '', note: '', emails: '' };
+    const keys = { 'Accommodation: ': 'accom', 'Emails: ': 'emails', 'Note: ': 'note' };
+    let cur = 'note';
+    String(raw || '').split('\n').forEach((line) => {
+      const k = Object.keys(keys).find((p) => line.startsWith(p));
+      if (k) { cur = keys[k]; out[cur] = line.slice(k.length); }
+      else out[cur] = out[cur] ? out[cur] + '\n' + line : line;
+    });
+    return out;
   }
   const allEvents = () => Object.fromEntries(CONFIG.events.map((e) => [e.id, true]));
 
@@ -457,7 +488,7 @@ const CONFIG = {
   document.getElementById('timeline').innerHTML = CONFIG.events.map((e) => `
     <li>
       <div class="when-col"><span class="label">${esc(e.day)}</span><span class="label time">${esc(e.time)}</span></div>
-      <div class="what-col"><h3>${esc(e.name)}</h3><p>${esc(e.blurb)}</p>${e.dress ? `<p class="dress-code"><span class="label">Dress code</span>${esc(e.dress)}</p>` : ''}</div>
+      <div class="what-col"><h3>${esc(e.name)}</h3><p>${esc(e.blurb)}</p>${e.dress ? `<p class="dress-code"><span class="label">Dress code</span>${esc(e.dress)}</p>` : ''}${e.photo ? `<figure class="ev-photo"><img src="${esc(e.photo)}" alt="${esc(e.alt || '')}" loading="lazy" onerror="this.closest('figure').hidden=true"></figure>` : ''}</div>
     </li>`).join('');
   document.getElementById('photos').innerHTML = CONFIG.photos.map((p, i) => `
     <figure>
@@ -516,6 +547,9 @@ const CONFIG = {
       const dietary = CONFIG.askDietary ? `
         <div class="field"><label for="g${i}-diet">Dietary preferences (optional)</label>
           <input id="g${i}-diet" type="text" maxlength="200" value="${esc(g.dietary || '')}" placeholder="e.g. vegetarian, Jain, no nuts"></div>` : '';
+      const email = `
+        <div class="field"><label for="g${i}-email">Email (optional)</label>
+          <input id="g${i}-email" type="email" autocomplete="${i === 0 ? 'email' : 'off'}" maxlength="200" value="${esc(g.email || '')}" placeholder="For updates closer to the date"></div>`;
       return `
       <fieldset class="guest" data-i="${i}">
         <legend>${esc(g.name)}</legend>
@@ -524,6 +558,7 @@ const CONFIG = {
           <span class="choice"><input type="radio" name="g${i}-att" id="g${i}-no" value="no" ${g.attending === 'no' ? 'checked' : ''}><label for="g${i}-no">Can't make it</label></span>
         </div>
         <div class="sub" id="g${i}-more" ${yes ? '' : 'hidden'}>
+          ${email}
           <div class="choices"><span class="choice check"><input type="checkbox" id="g${i}-perform" ${g.perform ? 'checked' : ''}><label for="g${i}-perform">Count me in for a sangeet act</label></span></div>
           ${dietary}
         </div>
@@ -594,6 +629,9 @@ const CONFIG = {
       const events = att === 'yes' ? allEvents() : {};
       const out = { name: g.name, attending: att, events, perform: att === 'yes' && document.getElementById(`g${i}-perform`).checked };
       if (CONFIG.askDietary) out.dietary = att === 'yes' ? document.getElementById(`g${i}-diet`).value.trim() : '';
+      const emailEl = document.getElementById(`g${i}-email`);
+      out.email = att === 'yes' ? emailEl.value.trim() : (g.email || '');
+      if (out.email && !emailEl.checkValidity()) return fail(`That email for ${firstName(g.name)} doesn't look right.`);
       guests.push(out);
     }
     const note = document.getElementById('note').value.trim();
@@ -604,7 +642,9 @@ const CONFIG = {
       if (PREVIEW) {
         await new Promise((r) => setTimeout(r, 500));
       } else {
-        const res = await call('POST', { code: state.code, guests, note: packNote(accom, note) });
+        const emails = guests.filter((x) => x.email).map((x) => firstName(x.name) + ' ' + x.email).join(', ');
+        const body = state.v2 ? { code: state.code, guests, note, accom } : { code: state.code, guests, note: packNote(accom, note, emails) };
+        const res = await call('POST', body);
         if (!res || !res.ok) throw new Error((res && res.error) || 'not saved');
       }
       state.guests = state.guests.map((g, i) => Object.assign({}, g, guests[i]));
@@ -641,7 +681,9 @@ const CONFIG = {
         return showMessage("We couldn't find that link", 'Check that you opened the full link from our message, or message Anushri or Bharath and we\'ll resend it.');
       }
       state.guests = res.guests;
-      Object.assign(state, unpackNote(res.note));
+      state.v2 = res.version >= 2;
+      if (state.v2) { state.note = res.note || ''; state.accom = res.accom || ''; }
+      else Object.assign(state, unpackNote(res.note));
       if (state.guests.every((g) => g.attending)) showDone(false); else showForm();
     } catch (err) {
       showMessage("We couldn't load your invitation", 'Check your connection and try again.', load);
