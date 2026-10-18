@@ -19,7 +19,9 @@
 <meta name="theme-color" content="#1E6F6D">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;600;700&display=swap">
+<!-- Georgia for headings (Gelasio is its free twin, used only where Georgia is missing, e.g. Android).
+     Montserrat stands in for Gotham, which is a paid font. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gelasio:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: one long invitation. A card-style hero, then alternating teal bands;
    copy sits in a single left-aligned column; the RSVP is the only paper card. */
@@ -38,13 +40,13 @@
   --ink-rule: #D3E3E1;
   --error: #A62C55;
 
-  --font-display: "Montserrat", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Gelasio", Georgia, "Times New Roman", serif;
+  --font-head: Georgia, "Gelasio", "Times New Roman", serif;               /* headings */
+  --font-text: "Montserrat", "Gotham", "Avenir Next", "Segoe UI", system-ui, sans-serif; /* everything else */
 
-  --fs-body: 1.0625rem;
+  --fs-body: 1rem;
   --fs-small: 0.9rem;
   --fs-label: 0.8125rem;
-  --fs-title: 1.25rem;
+  --fs-title: 1.5rem;
   --fs-h3: 1.5rem;
   --column: 40rem;
   color-scheme: dark;
@@ -57,14 +59,14 @@ body {
   margin: 0;
   background: var(--ground);
   color: var(--on-ground);
-  font-family: var(--font-body);
+  font-family: var(--font-text);
   font-size: var(--fs-body);
-  line-height: 1.65;
+  line-height: 1.7;
   overflow-x: clip;
 }
 body::before {
   content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
-  z-index: 10; background: var(--ground-deep);
+  z-index: 10; background: var(--ground);
 }
 img { max-width: 100%; display: block; }
 [hidden] { display: none !important; }
@@ -83,50 +85,54 @@ a { color: inherit; text-underline-offset: 3px; }
 .band-deep { background: var(--ground-deep); }
 .band-deep .soft { color: var(--on-ground-soft); }
 .section-title {
-  font-family: var(--font-display); font-weight: 700; font-size: var(--fs-title);
-  letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
+  font-family: var(--font-head); font-weight: 400; font-size: var(--fs-title);
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold);
   margin: 0 0 28px; text-wrap: balance;
 }
-h3 { font-family: var(--font-body); font-weight: 500; font-size: var(--fs-h3); line-height: 1.25; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--font-head); font-weight: 400; font-size: var(--fs-h3); line-height: 1.25; margin: 0; text-wrap: balance; }
 p { margin: 0; }
 .stack { display: grid; gap: 16px; }
 .label {
-  font-family: var(--font-display); font-weight: 600; font-size: var(--fs-label);
+  font-family: var(--font-text); font-weight: 600; font-size: var(--fs-label);
   letter-spacing: 0.14em; text-transform: uppercase;
 }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   min-height: 48px; padding: 12px 24px; border: 0; border-radius: 999px;
   background: var(--gold); color: var(--ink);
-  font-family: var(--font-display); font-weight: 700; font-size: 0.875rem;
+  font-family: var(--font-text); font-weight: 700; font-size: 0.875rem;
   letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; cursor: pointer;
 }
 .btn:hover { filter: brightness(1.05); }
 .btn[disabled] { opacity: 0.6; cursor: progress; }
 
 /* ---------- nav ---------- */
+/* Section links sit top right and stay there as you scroll. */
 .nav {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
-  background: var(--ground-deep); border-bottom: 1px solid var(--rule);
+  background: var(--ground); transition: background-color .2s, box-shadow .2s;
 }
+.nav.scrolled { background: var(--ground-deep); box-shadow: 0 1px 0 var(--rule); }
 .nav ul {
-  list-style: none; margin: 0 auto; max-width: calc(var(--column) + 2 * 24px);
-  display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+  list-style: none; margin: 0 auto; max-width: 1100px;
+  display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none;
   padding-block: 6px;
   padding-left: max(10px, env(safe-area-inset-left, 0px));
   padding-right: max(10px, env(safe-area-inset-right, 0px));
 }
+.nav li:first-child { margin-left: auto; }
 .nav ul::-webkit-scrollbar { display: none; }
 .nav a {
   display: block; padding: 10px 8px; white-space: nowrap; text-decoration: none;
-  font-family: var(--font-display); font-weight: 600; font-size: 0.75rem;
+  font-family: var(--font-text); font-weight: 600; font-size: 0.75rem;
   letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-ground);
 }
 .nav a:hover { color: var(--gold); }
+@media (max-width: 380px) { .nav a { padding-inline: 6px; letter-spacing: 0.08em; } }
 
 /* ---------- hero ---------- */
 .hero { position: relative; overflow: hidden; background: var(--ground); text-align: center; }
-.hero .wrap { position: relative; z-index: 1; padding-block: 80px 72px; display: grid; justify-items: center; gap: 22px; }
+.hero .wrap { position: relative; z-index: 1; padding-block: 56px 72px; display: grid; justify-items: center; gap: 22px; }
 /* Like the card: a mandala peeks in from the top-right and bottom-left corners. */
 .mandala { --m: clamp(250px, 44vw, 520px); position: absolute; z-index: 0; pointer-events: none; width: var(--m); height: auto; }
 .mandala-tr { top: calc(var(--m) * -0.5); right: calc(var(--m) * -0.5); }
@@ -135,7 +141,7 @@ p { margin: 0; }
   .mandala { --m: 260px; }
   .mandala-tr { top: -150px; right: -150px; }
   .mandala-bl { bottom: -150px; left: -150px; }
-  .hero .wrap { padding-block: 124px 104px; }
+  .hero .wrap { padding-block: 96px 104px; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .mandala { animation: turn 240s linear infinite; }
@@ -143,13 +149,13 @@ p { margin: 0; }
 }
 @keyframes turn { to { transform: rotate(360deg); } }
 .eyebrow {
-  font-family: var(--font-display); font-weight: 700; font-size: 1.1875rem;
+  font-family: var(--font-text); font-weight: 700; font-size: 1.1875rem;
   letter-spacing: 0.26em; text-transform: uppercase; color: var(--gold);
 }
 .names { margin: 0; width: min(100%, 640px); }
 .names img { width: 100%; height: auto; }
-.lede { font-size: 1.25rem; line-height: 1.55; max-width: 30ch; text-wrap: balance; }
-.when { font-family: var(--font-display); font-weight: 600; font-size: 0.875rem; letter-spacing: 0.16em; text-transform: uppercase; }
+.lede { font-size: 1.125rem; line-height: 1.6; max-width: 34ch; text-wrap: balance; }
+.when { font-family: var(--font-text); font-weight: 600; font-size: 0.875rem; letter-spacing: 0.16em; text-transform: uppercase; }
 .when span { white-space: nowrap; }
 
 /* ---------- rsvp card ---------- */
@@ -166,19 +172,19 @@ p { margin: 0; }
 .rsvp-card .btn { background: var(--ground); color: var(--on-ground); justify-self: start; }
 .rsvp-card .btn.secondary { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink-rule); }
 .preview-note {
-  font-family: var(--font-display); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em;
+  font-family: var(--font-text); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em;
   color: var(--ink-soft); background: #E7F1F0; border-radius: 10px; padding: 10px 12px;
 }
 .guest { border: 0; margin: 0; padding: 20px 0 0; border-top: 1px solid var(--ink-rule); display: grid; gap: 14px; min-width: 0; }
 .guest:first-of-type { border-top: 0; padding-top: 0; }
-.guest legend { padding: 0; font-family: var(--font-body); font-size: 1.25rem; font-weight: 500; float: left; width: 100%; }
+.guest legend { padding: 0; font-family: var(--font-head); font-size: 1.25rem; font-weight: 400; float: left; width: 100%; }
 .guest legend + * { clear: both; }
 .choices { display: flex; flex-wrap: wrap; gap: 10px; }
 .choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .choice label {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 16px;
   border-radius: 999px; cursor: pointer; user-select: none;
-  font-family: var(--font-display); font-weight: 600; font-size: 0.875rem;
+  font-family: var(--font-text); font-weight: 600; font-size: 0.875rem;
   background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink-rule);
 }
 .choice label::before {
@@ -191,18 +197,18 @@ p { margin: 0; }
 .choice input:focus-visible + label { outline: 3px solid var(--ground); outline-offset: 2px; }
 .sub { display: grid; gap: 10px; }
 .field { display: grid; gap: 6px; }
-.field label { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-label); color: var(--ink); }
+.field label { font-family: var(--font-text); font-weight: 600; font-size: var(--fs-label); color: var(--ink); }
 .field input, .field textarea {
   width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: #fff;
   border: 1.5px solid var(--ink-rule); border-radius: 10px; padding: 10px 12px;
 }
 .field textarea { min-height: 96px; resize: vertical; }
 .field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--ground); outline-offset: 1px; border-color: transparent; }
-.error { color: var(--error); font-family: var(--font-display); font-weight: 600; font-size: var(--fs-small); }
+.error { color: var(--error); font-family: var(--font-text); font-weight: 600; font-size: var(--fs-small); }
 .summary { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .summary li { display: grid; gap: 2px; padding-bottom: 12px; border-bottom: 1px solid var(--ink-rule); }
 .summary li:last-child { border-bottom: 0; padding-bottom: 0; }
-.summary strong { font-weight: 500; font-size: 1.125rem; }
+.summary strong { font-family: var(--font-head); font-weight: 400; font-size: 1.125rem; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 .loading { display: flex; align-items: center; gap: 12px; color: var(--ink-soft); }
 .spinner { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid var(--ink-rule); border-top-color: var(--ground); animation: spin 0.9s linear infinite; }
@@ -212,7 +218,7 @@ p { margin: 0; }
 /* ---------- events ---------- */
 .timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
 .timeline li {
-  position: relative; display: grid; grid-template-columns: 7.5rem 1fr; gap: 6px 20px;
+  position: relative; display: grid; grid-template-columns: 9.5rem 1fr; gap: 6px 20px;
   padding: 0 0 32px 22px; border-left: 1px solid var(--rule);
 }
 .timeline li:last-child { padding-bottom: 0; border-left-color: transparent; }
@@ -220,10 +226,15 @@ p { margin: 0; }
   content: ""; position: absolute; left: -6px; top: 6px; width: 11px; height: 11px;
   border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px var(--ground);
 }
-.when-col { display: grid; gap: 2px; padding-top: 2px; }
+.when-col { display: grid; gap: 2px; padding-top: 4px; align-content: start; }
 .when-col .time { color: var(--gold); }
 .what-col { display: grid; gap: 6px; min-width: 0; }
-.dress { margin-top: 28px; }
+.dress-code { font-size: var(--fs-small); }
+.dress-code .label { color: var(--gold); margin-right: 6px; }
+.outfits { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--rule); }
+.shops { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.shops a { font-weight: 600; color: var(--on-ground); text-decoration-color: var(--gold); text-decoration-thickness: 2px; }
+.shops a:hover { color: var(--gold); }
 
 /* ---------- stay & travel ---------- */
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 12px; margin: 8px 0 0; }
@@ -232,8 +243,8 @@ p { margin: 0; }
 .fact dd { margin: 0; }
 .airports { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 14px; }
 .airport { border: 1px solid var(--rule); border-radius: 14px; padding: 16px 18px; display: grid; gap: 4px; min-width: 0; }
-.airport .code { font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; letter-spacing: 0.08em; color: var(--gold); line-height: 1.1; }
-.airport .drive { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-label); letter-spacing: 0.1em; text-transform: uppercase; }
+.airport .code { font-family: var(--font-text); font-weight: 700; font-size: 1.75rem; letter-spacing: 0.08em; color: var(--gold); line-height: 1.1; }
+.airport .drive { font-family: var(--font-text); font-weight: 600; font-size: var(--fs-label); letter-spacing: 0.1em; text-transform: uppercase; }
 .tips { display: grid; gap: 24px; margin-top: 32px; }
 .tip { display: grid; gap: 6px; }
 .tip h3 { font-size: 1.1875rem; }
@@ -257,7 +268,7 @@ footer img { width: 72px; height: auto; }
 @media (min-width: 720px) {
   .band { padding-block: 88px; }
   .rsvp-card { padding: 36px 40px; }
-  .nav ul { justify-content: center; gap: 12px; }
+  .nav ul { gap: 10px; }
 }
 @media (max-width: 420px) {
   .timeline li { grid-template-columns: 1fr; }
@@ -265,18 +276,6 @@ footer img { width: 72px; height: auto; }
 </style>
 </head>
 <body>
-
-<header class="hero" id="top">
-  <img class="mandala mandala-tr" src="img/mandala.webp" alt="" width="718" height="714">
-  <img class="mandala mandala-bl" src="img/mandala.webp" alt="" width="718" height="714">
-  <div class="wrap">
-    <p class="eyebrow">Save the date</p>
-    <h1 class="names"><img src="img/names.png" alt="Anushri &amp; Bharath" width="1400" height="298"></h1>
-    <p class="lede">We're getting married in Goa, India, and we'd love you there. Your stay is on us.</p>
-    <p class="when"><span>30–31 March 2027</span> · <span>Morjim, North Goa</span></p>
-    <a class="btn" href="#rsvp">RSVP</a>
-  </div>
-</header>
 
 <nav class="nav" aria-label="Sections">
   <ul>
@@ -287,6 +286,18 @@ footer img { width: 72px; height: auto; }
     <li><a href="#us">Photos</a></li>
   </ul>
 </nav>
+
+<header class="hero" id="top">
+  <img class="mandala mandala-tr" src="img/mandala.webp" alt="" width="718" height="714">
+  <img class="mandala mandala-bl" src="img/mandala.webp" alt="" width="718" height="714">
+  <div class="wrap">
+    <p class="eyebrow">Save the date</p>
+    <h1 class="names"><img src="img/names.png" alt="Anushri &amp; Bharath" width="1400" height="298"></h1>
+    <p class="lede">We can't wait to get married and celebrate with you in Goa, India. Your presence in our lives means so much, and your stay is booked, on us.</p>
+    <p class="when"><span>30–31 March 2027</span> · <span>Morjim, North Goa</span></p>
+    <a class="btn" href="#rsvp">RSVP</a>
+  </div>
+</header>
 
 <main>
   <section class="band band-deep" id="rsvp" aria-labelledby="rsvp-title">
@@ -304,7 +315,17 @@ footer img { width: 72px; height: auto; }
     <div class="wrap">
       <h2 class="section-title" id="events-title">The celebrations</h2>
       <ol class="timeline" id="timeline"></ol>
-      <p class="dress">We'll share what to wear for each event closer to the date.</p>
+      <div class="outfits stack">
+        <h3>Outfit inspiration</h3>
+        <p>For the sangeet, go Indian festive: colour, sparkle, and shoes you can dance in. Everything else is semi-formal.</p>
+        <ul class="shops">
+          <li><a href="https://www.pinterest.com/search/pins/?q=indian%20festive%20wedding%20guest%20outfits" target="_blank" rel="noopener">Pinterest: Indian festive ideas</a></li>
+          <li><a href="https://www.lashkaraa.com/" target="_blank" rel="noopener">Lashkaraa</a><span class="soft"> · US-based</span></li>
+          <li><a href="https://www.kalkifashion.com/" target="_blank" rel="noopener">Kalki Fashion</a></li>
+          <li><a href="https://www.azafashions.com/" target="_blank" rel="noopener">Aza Fashions</a><span class="soft"> · designer, ships to the US</span></li>
+          <li><a href="https://www.manyavar.com/" target="_blank" rel="noopener">Manyavar</a><span class="soft"> · menswear</span></li>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -313,7 +334,7 @@ footer img { width: 72px; height: auto; }
       <h2 class="section-title" id="stay-title">Where we'll be</h2>
       <h3>Praya Villas, Morjim</h3>
       <p>Praya Villas is a set of fourteen Indo-Portuguese style villas right on Morjim Beach in North Goa. Morjim is one of Goa's quieter stretches of sand, and Olive Ridley sea turtles come ashore here to nest.</p>
-      <p>Your stay is on us. Everyone stays at Praya, and we'll send your villa and room details closer to the date. Coming early or staying on after? Tell us in your RSVP note and we'll help you find somewhere nearby.</p>
+      <p>Your stay is on us. Everyone stays at <a href="https://www.prayavillas.com/" target="_blank" rel="noopener">Praya</a>, and we'll send your villa and room details closer to the date. Coming early or staying on after? Add it under accommodation requests in your RSVP and we'll help you find somewhere nearby.</p>
       <dl class="facts">
         <div class="fact"><dt class="label">Check in</dt><dd>Tue 30 March</dd></div>
         <div class="fact"><dt class="label">Check out</dt><dd>Thu 1 April</dd></div>
@@ -382,16 +403,17 @@ const CONFIG = {
   // Paste your Apps Script web-app URL (it ends in /exec). Leave '' for preview mode.
   apiUrl: 'https://script.google.com/macros/s/AKfycbzQVbK2J8b1ocpekvGU_jHe05g7gpj9d75JbU8IlY2M5UgZ1cfIwW-ZeFpJAoU5SxjF/exec',
   rsvpBy: '31 October 2026',
-  // Flip to true when you're ready to ask about food; guests reuse the same link.
-  askDietary: false,
+  // Asks each guest who's coming for dietary preferences.
+  askDietary: true,
   // Event ids must match the EVENTS list in Code.gs.
   events: [
     { id: 'sangeet', name: 'Sangeet', day: 'Tue 30 March', time: 'Evening',
-      blurb: "A dance party. Dance, play music, or make fun of us 😉 We'll share how to join a performance soon." },
+      blurb: "A dance party. Dance, play music, or make fun of us 😉 We'll share how to join a performance soon.",
+      dress: 'Indian festive' },
     { id: 'kerala', name: 'Kerala ceremony', day: 'Wed 31 March', time: 'Time to come',
-      blurb: 'A traditional Kerala wedding ceremony.' },
+      blurb: 'A traditional Kerala wedding ceremony.', dress: 'Semi-formal' },
     { id: 'wedding', name: 'Wedding', day: 'Wed 31 March', time: 'Evening',
-      blurb: 'The North Indian wedding and the celebration after.' },
+      blurb: 'The North Indian wedding and the celebration after.', dress: 'Semi-formal' },
   ],
   // Add photos to the img folder and list them here. Captions are optional.
   photos: [
@@ -410,16 +432,27 @@ const CONFIG = {
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const firstName = (n) => String(n).trim().split(/\s+/)[0];
   const joinNames = (list) => list.length <= 1 ? (list[0] || '') : list.slice(0, -1).join(', ') + ' & ' + list[list.length - 1];
-  const eventName = (id) => (CONFIG.events.find((e) => e.id === id) || {}).name || id;
 
-  let state = { code: null, guests: [], note: '' };
+  let state = { code: null, guests: [], note: '', accom: '' };
+
+  // Accommodation requests and the note share the Sheet's Note column.
+  function packNote(accom, note) {
+    return [accom && 'Accommodation: ' + accom, note && 'Note: ' + note].filter(Boolean).join('\n');
+  }
+  function unpackNote(raw) {
+    const s = String(raw || '');
+    const m = s.match(/^Accommodation: ([\s\S]*?)(?:\nNote: ([\s\S]*))?$/);
+    if (m) return { accom: m[1], note: m[2] || '' };
+    return { accom: '', note: s.startsWith('Note: ') ? s.slice(6) : s };
+  }
+  const allEvents = () => Object.fromEntries(CONFIG.events.map((e) => [e.id, true]));
 
   /* ---------- static sections ---------- */
   document.getElementById('rsvp-by').textContent = 'Please RSVP by ' + CONFIG.rsvpBy + '.';
   document.getElementById('timeline').innerHTML = CONFIG.events.map((e) => `
     <li>
       <div class="when-col"><span class="label">${esc(e.day)}</span><span class="label time">${esc(e.time)}</span></div>
-      <div class="what-col"><h3>${esc(e.name)}</h3><p>${esc(e.blurb)}</p></div>
+      <div class="what-col"><h3>${esc(e.name)}</h3><p>${esc(e.blurb)}</p>${e.dress ? `<p class="dress-code"><span class="label">Dress code</span>${esc(e.dress)}</p>` : ''}</div>
     </li>`).join('');
   document.getElementById('photos').innerHTML = CONFIG.photos.map((p, i) => `
     <figure>
@@ -475,14 +508,9 @@ const CONFIG = {
     const many = state.guests.length > 1;
     const guestsHtml = state.guests.map((g, i) => {
       const yes = g.attending === 'yes';
-      const events = CONFIG.events.map((e) => {
-        // New answers and earlier "can't make it" answers start with every event ticked.
-        const checked = !yes || (g.events && g.events[e.id]);
-        return `<span class="choice check"><input type="checkbox" id="g${i}-ev-${e.id}" data-event="${e.id}" ${checked ? 'checked' : ''}><label for="g${i}-ev-${e.id}">${esc(e.name)}</label></span>`;
-      }).join('');
       const dietary = CONFIG.askDietary ? `
-        <div class="field"><label for="g${i}-diet">Dietary needs or allergies</label>
-          <input id="g${i}-diet" type="text" maxlength="200" value="${esc(g.dietary || '')}" placeholder="e.g. vegetarian, no nuts"></div>` : '';
+        <div class="field"><label for="g${i}-diet">Dietary preferences (optional)</label>
+          <input id="g${i}-diet" type="text" maxlength="200" value="${esc(g.dietary || '')}" placeholder="e.g. vegetarian, Jain, no nuts"></div>` : '';
       return `
       <fieldset class="guest" data-i="${i}">
         <legend>${esc(g.name)}</legend>
@@ -491,8 +519,6 @@ const CONFIG = {
           <span class="choice"><input type="radio" name="g${i}-att" id="g${i}-no" value="no" ${g.attending === 'no' ? 'checked' : ''}><label for="g${i}-no">Can't make it</label></span>
         </div>
         <div class="sub" id="g${i}-more" ${yes ? '' : 'hidden'}>
-          <p class="muted">Which events? Untick any you'll miss.</p>
-          <div class="choices">${events}</div>
           <div class="choices"><span class="choice check"><input type="checkbox" id="g${i}-perform" ${g.perform ? 'checked' : ''}><label for="g${i}-perform">Count me in for a sangeet act</label></span></div>
           ${dietary}
         </div>
@@ -508,8 +534,12 @@ const CONFIG = {
       <form id="rsvp-form" class="stack" style="gap:22px" novalidate>
         ${guestsHtml}
         <div class="field">
+          <label for="accom">Accommodation requests (optional)</label>
+          <textarea id="accom" maxlength="450" placeholder="Arriving early or staying on, a ground-floor room, a cot for a little one, anything that helps">${esc(state.accom)}</textarea>
+        </div>
+        <div class="field">
           <label for="note">Anything else? (optional)</label>
-          <textarea id="note" maxlength="1000" placeholder="Arriving early, a song request, or a note to us">${esc(state.note)}</textarea>
+          <textarea id="note" maxlength="450" placeholder="A song request, or a note to us">${esc(state.note)}</textarea>
         </div>
         <p class="error" id="form-error" hidden></p>
         <div class="actions"><button class="btn" type="submit" id="send">Send RSVP</button></div>
@@ -528,8 +558,7 @@ const CONFIG = {
     const items = state.guests.map((g) => {
       let line;
       if (g.attending === 'yes') {
-        const evs = CONFIG.events.filter((e) => g.events && g.events[e.id]).map((e) => e.name);
-        line = 'Coming to ' + (evs.length ? joinNames(evs) : 'the celebrations') + (g.perform ? ' · up for a sangeet act' : '');
+        line = ['Coming', g.dietary, g.perform ? 'up for a sangeet act' : ''].filter(Boolean).join(' · ');
       } else {
         line = "Can't make it";
       }
@@ -540,6 +569,7 @@ const CONFIG = {
       <h3>${justSent ? 'Thank you, ' + esc(names) + '!' : 'Your RSVP'}</h3>
       <p>${anyYes ? "We can't wait to celebrate with you in Goa." : "We'll miss you, and we'll raise a glass to you in Goa."}</p>
       <ul class="summary">${items}</ul>
+      ${state.accom ? `<p class="muted"><strong>Accommodation requests:</strong> ${esc(state.accom)}</p>` : ''}
       <div class="actions"><button class="btn secondary" type="button" id="edit">Change answers</button></div>
       <p class="muted">Plans change? Use this same link any time before ${esc(CONFIG.rsvpBy)}.</p>`;
     document.getElementById('edit').addEventListener('click', () => { showForm(); card.querySelector('input')?.focus(); });
@@ -555,25 +585,26 @@ const CONFIG = {
       const g = state.guests[i];
       const att = (card.querySelector(`input[name="g${i}-att"]:checked`) || {}).value || '';
       if (!att) return fail(`Let us know whether ${firstName(g.name)} can come.`);
-      const events = {};
-      CONFIG.events.forEach((e) => { events[e.id] = att === 'yes' && document.getElementById(`g${i}-ev-${e.id}`).checked; });
-      if (att === 'yes' && !Object.values(events).some(Boolean)) return fail(`Pick at least one event for ${firstName(g.name)}.`);
+      // One overall answer: coming means coming to everything.
+      const events = att === 'yes' ? allEvents() : {};
       const out = { name: g.name, attending: att, events, perform: att === 'yes' && document.getElementById(`g${i}-perform`).checked };
       if (CONFIG.askDietary) out.dietary = att === 'yes' ? document.getElementById(`g${i}-diet`).value.trim() : '';
       guests.push(out);
     }
     const note = document.getElementById('note').value.trim();
+    const accom = document.getElementById('accom').value.trim();
     const btn = document.getElementById('send');
     btn.disabled = true; btn.textContent = 'Sending…';
     try {
       if (PREVIEW) {
         await new Promise((r) => setTimeout(r, 500));
       } else {
-        const res = await call('POST', { code: state.code, guests, note });
+        const res = await call('POST', { code: state.code, guests, note: packNote(accom, note) });
         if (!res || !res.ok) throw new Error((res && res.error) || 'not saved');
       }
       state.guests = state.guests.map((g, i) => Object.assign({}, g, guests[i]));
       state.note = note;
+      state.accom = accom;
       showDone(true);
       card.scrollIntoView({ block: 'nearest' });
     } catch (err) {
@@ -605,13 +636,18 @@ const CONFIG = {
         return showMessage("We couldn't find that link", 'Check that you opened the full link from our message, or message Anushri or Bharath and we\'ll resend it.');
       }
       state.guests = res.guests;
-      state.note = res.note || '';
+      Object.assign(state, unpackNote(res.note));
       if (state.guests.every((g) => g.attending)) showDone(false); else showForm();
     } catch (err) {
       showMessage("We couldn't load your invitation", 'Check your connection and try again.', load);
     }
   }
   load();
+
+  const nav = document.querySelector('.nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 })();
 </script>
 </body>
