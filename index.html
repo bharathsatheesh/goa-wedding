@@ -146,7 +146,7 @@ p { margin: 0; }
   .mandala { --m: 230px; }
   .mandala-tr { top: -92px; right: -92px; }
   .mandala-bl { bottom: -92px; left: -92px; }
-  .hero .wrap { padding-block: 150px 150px; }
+  .hero .wrap { padding-block: 128px 150px; }
 }
 /* The same mandala, faint, drifting through the rest of the page. */
 .band { position: relative; overflow: clip; }
@@ -182,6 +182,9 @@ p { margin: 0; }
   font-family: var(--font-head); font-weight: 400; font-size: 1.1875rem;
   letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
 }
+/* The dancing clip at the top, framed like the arched doorway behind them. */
+.hero-clip { margin: 0; width: clamp(170px, 20vw, 240px); }
+.hero-clip img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 999px 999px 18px 18px; border: 3px solid var(--gold); background: var(--ground-deep); box-shadow: 0 14px 30px rgba(6, 40, 39, .3); }
 .names { margin: 0; width: min(100%, 640px); }
 .names img { width: 100%; height: auto; }
 .lede { font-size: 1.0625rem; line-height: 1.6; max-width: 46rem; text-wrap: balance; }
@@ -380,6 +383,7 @@ footer img { width: 72px; height: auto; }
   <img class="mandala mandala-tr" src="img/mandala.webp" alt="" width="718" height="714">
   <img class="mandala mandala-bl" src="img/mandala.webp" alt="" width="718" height="714">
   <div class="wrap">
+    <figure class="hero-clip"><picture><source media="(prefers-reduced-motion: reduce)" srcset="img/dance-still.jpg"><img src="img/dance.webp" alt="Anushri and Bharath dancing in front of an arched doorway" width="480" height="600"></picture></figure>
     <p class="eyebrow">Save the date</p>
     <h1 class="names"><img src="img/names.png" alt="Anushri &amp; Bharath" width="1400" height="298"></h1>
     <p class="lede">We can't wait to celebrate our marriage with you in Goa, India. Your stay is on us.</p>
@@ -421,7 +425,7 @@ footer img { width: 72px; height: auto; }
       <h3>Praya Villas, Morjim</h3>
       <figure class="stay-photo"><img src="img/praya.jpg" alt="A villa living room at Praya, with sofas and armchairs opening onto a garden lawn and pool" width="1280" height="960" loading="lazy"></figure>
       <p>Praya Villas is a set of fourteen Indo-Portuguese style villas right on Morjim Beach in North Goa. Morjim is one of Goa's quieter stretches of sand, and Olive Ridley sea turtles come ashore here to nest.</p>
-      <p>Your stay is on us. Everyone stays at <a href="https://www.prayavillas.com/" target="_blank" rel="noopener">Praya</a>, and we'll send your villa and room details closer to the date.</p>
+      <p>Your stay is on us. Everyone stays at Praya, and we'll send your villa and room details closer to the date.</p>
       <dl class="facts">
         <div class="fact"><dt class="label">Check in</dt><dd>Tue 30 March</dd></div>
         <div class="fact"><dt class="label">Check out</dt><dd>Thu 1 April</dd></div>
