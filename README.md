@@ -3,7 +3,10 @@
 A one-page site with personal RSVP links. Hosted free on GitHub Pages at https://bharathsatheesh.github.io/goa-wedding/ (served from the `gh-pages` branch, so push changes to both `main` and `gh-pages`). Answers are saved to a Google Sheet.
 
 ```
-index.html          the whole site. Edit the CONFIG block near the bottom.
+index.html          the site ("spin the mandala"). It is generated: don't edit it by hand.
+src/content.html    the content and RSVP code (wording, CONFIG, events, photos, form). Edit here,
+                    then rebuild index.html with the build script (build-spin.py + spin-template.html).
+spin/index.html     forwards the old preview address to the main page, keeping ?g= codes.
 img/                photos, card artwork, og.jpg (the WhatsApp/iMessage link preview)
 apps-script/Code.gs the Sheet backend (it gets pasted into the Sheet, not served from here)
 ```
@@ -24,7 +27,7 @@ The repo is public, so guest names live only in the Sheet and never in this repo
 In **Guests**, fill in **Name**, and optionally **Household**. Then use **Wedding RSVP → Create links** in the Sheet's menu. That fills in **Code**, **Link** and a ready-to-paste **Message** (on the first row of each household). Codes never change once made, so it's safe to re-run whenever you add people. The **Summary** tab keeps live counts.
 
 ## Common edits
-- **Event times, RSVP date, wording:** `CONFIG` in `index.html`. Event `id`s must stay in sync with `EVENTS` in `Code.gs`.
+- **Event times, RSVP date, wording:** `CONFIG` in `src/content.html`, then rebuild `index.html`. Event `id`s must stay in sync with `EVENTS` in `Code.gs`.
 - **Photos:** drop them into `img/` (about 1600px wide is plenty) and add a line to `CONFIG.photos`.
 - **Ask about food later:** set `askDietary: true`. Guests reuse the same link, and answers land in the **Dietary** column.
 - **Changing Code.gs after deploying:** use **Deploy → Manage deployments → Edit (pencil) → Version: New version → Deploy**. That keeps the same URL. Creating a *new* deployment gives you a new URL instead.
