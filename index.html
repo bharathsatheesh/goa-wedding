@@ -322,21 +322,26 @@ body::before { background: #F9EBCB; }
 .stage { position: fixed; inset: var(--nav-h) 0 0 0; }
 /* Laptop: the nav sits just above the mandala and envelope, and the three are centred as one group. */
 @media (min-width: 900px) {
-  /* Softer bokeh behind everything. */
-  body { background-image: linear-gradient(rgba(249, 236, 208, .28), rgba(249, 236, 208, .28)), url(img/bokeh.webp); }
+  /* The arch starts near the top of the screen and runs off the bottom; the nav, mandala and letter
+     sit centred in it. Outside the arch the bokeh takes a teal tint. */
+  :root { --atop: 28px; --grp: calc(var(--desk-h) * var(--fit, 1) + var(--nav-h) + 12px); --gmid: calc((var(--atop) + 100vh) / 2); }
+  body { background-image: linear-gradient(rgba(52, 145, 152, .40), rgba(52, 145, 152, .40)), url(img/bokeh.webp); background-attachment: fixed; }
   .stage { inset: 0; }
-  .nav { top: max(0px, calc(50% - (var(--desk-h) * var(--fit, 1) + var(--nav-h) + 12px) / 2)); bottom: auto; }
+  .nav { top: calc(var(--gmid) - var(--grp) / 2); bottom: auto; }
   .nav ul { justify-content: center; padding: 0; }
-  .stage .comp { top: calc(50% + (var(--nav-h) + 12px) / 2); }
+  .stage .comp { top: calc(var(--gmid) + (var(--nav-h) + 12px) / 2); }
   /* A softly darkened doorway arch frames the nav, the mandala and the letter. */
   .arch {
     position: fixed; z-index: 0; left: 50%; translate: -50% 0; pointer-events: none;
-    --grp: calc(var(--desk-h) * var(--fit, 1) + var(--nav-h) + 12px);
-    top: calc(50% - var(--grp) / 2 - 84px * var(--fit, 1));
+    top: var(--atop);
     bottom: -80px;
     width: calc((var(--D) * .5 + var(--env-w) + 380px) * var(--fit, 1));
     border-radius: 50% 50% 22px 22px / calc(300px * var(--fit, 1)) calc(300px * var(--fit, 1)) 22px 22px;
-    background: radial-gradient(120% 80% at 50% 30%, rgba(120, 72, 24, .07), rgba(90, 52, 16, .15));
+    /* Inside the arch: the warm gold bokeh (lined up with the page behind), slightly darkened. */
+    background:
+      radial-gradient(120% 80% at 50% 30%, rgba(120, 72, 24, .07), rgba(90, 52, 16, .15)),
+      linear-gradient(rgba(249, 236, 208, .28), rgba(249, 236, 208, .28)),
+      var(--cream) url(img/bokeh.webp) center / cover fixed;
     box-shadow: inset 0 0 0 1.5px rgba(178, 132, 52, .45), inset 0 24px 70px rgba(70, 40, 10, .14), 0 30px 80px rgba(70, 40, 10, .10);
   }
   .arch::after {
@@ -1427,8 +1432,9 @@ const CONFIG = {
     const nav = parseFloat(getComputedStyle(root).getPropertyValue('--nav-h')) + 12;
     // Room for the doorway arch: 84px above the nav and 34px below the letter, scaled with everything else,
     // and 190px each side for the Spin button.
-    // The arch reaches 84px above the nav, so the top half of the group is the one that must fit.
-    const fh = (window.innerHeight / 2 - nav / 2 - 12) / (comp.offsetHeight / 2 + 84);
+    // The group sits centred between the arch top (28px) and the bottom of the screen, with at least
+    // 84px (scaled) between the arch top and the nav so the nav clears the curve.
+    const fh = (window.innerHeight - 28 - nav) / (comp.offsetHeight + 168);
     const fw = (window.innerWidth - 32) / (comp.offsetWidth + 380);
     root.style.setProperty('--fit', Math.min(1, fh, fw).toFixed(3));
   }
