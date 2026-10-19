@@ -325,10 +325,16 @@ body::before { background: #F9EBCB; }
   /* The arch starts near the top of the screen and runs off the bottom; the nav, mandala and letter
      sit centred in it. Outside the arch the bokeh takes a teal tint. */
   :root { --atop: 28px; --grp: calc(var(--desk-h) * var(--fit, 1) + var(--nav-h) + 12px); --gmid: calc((var(--atop) + 100vh) / 2); }
-  body { background-image: linear-gradient(rgba(52, 145, 152, .40), rgba(52, 145, 152, .40)), url(img/bokeh.webp); background-attachment: fixed; }
+  body { background-image: linear-gradient(rgba(52, 145, 152, .40), rgba(52, 145, 152, .40)), url(img/bokeh-desk.webp); background-attachment: fixed; }
   .stage { inset: 0; }
   .nav { top: calc(var(--gmid) - var(--grp) / 2); bottom: auto; }
-  .nav ul { justify-content: center; padding: 0; }
+  .nav ul {
+    justify-content: center; width: fit-content; padding: 0 22px; gap: 6px;
+    height: calc(var(--nav-h) - 8px); margin-top: 4px; border-radius: 999px;
+    background: rgba(84, 58, 8, .2); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    box-shadow: inset 0 0 0 1px rgba(84, 58, 8, .14), 0 6px 18px rgba(70, 40, 10, .10);
+  }
+  .nav a { padding: 8px 10px; }
   .stage .comp { top: calc(var(--gmid) + (var(--nav-h) + 12px) / 2); }
   /* A softly darkened doorway arch frames the nav, the mandala and the letter. */
   .arch {
@@ -341,7 +347,7 @@ body::before { background: #F9EBCB; }
     background:
       radial-gradient(120% 80% at 50% 30%, rgba(120, 72, 24, .07), rgba(90, 52, 16, .15)),
       linear-gradient(rgba(249, 236, 208, .28), rgba(249, 236, 208, .28)),
-      var(--cream) url(img/bokeh.webp) center / cover fixed;
+      var(--cream) url(img/bokeh-desk.webp) center / cover fixed;
     box-shadow: inset 0 0 0 1.5px rgba(178, 132, 52, .45), inset 0 24px 70px rgba(70, 40, 10, .14), 0 30px 80px rgba(70, 40, 10, .10);
   }
   .arch::after {
@@ -363,11 +369,12 @@ body::before { background: #F9EBCB; }
 /* "Spin" is a teal oval button just left of the pointer; pressing it turns the mandala. */
 .spin-word {
   position: absolute; z-index: 2; right: calc(100% + 36px); top: 50%; translate: 0 -50%; white-space: nowrap; cursor: pointer;
-  padding: 9px 22px; border: 0; border-radius: 999px; background: var(--ground); color: #fff;
+  padding: 9px 22px; border: 0; border-radius: 999px; background: rgba(84, 58, 8, .24); color: #2E2108;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   font-family: var(--font-text); font-weight: 600; font-size: 0.875rem; letter-spacing: 0.04em;
-  box-shadow: 0 4px 12px rgba(6, 40, 39, .25); transition: background .2s, transform .15s;
+  box-shadow: inset 0 0 0 1px rgba(84, 58, 8, .18); transition: background .2s, transform .15s;
 }
-.spin-word:hover { background: var(--ground-deep); }
+.spin-word:hover { background: rgba(84, 58, 8, .34); }
 .spin-word:active { transform: scale(.96); }
 .spin-word:focus-visible { outline: 3px solid var(--ground-deep); outline-offset: 3px; }
 /* The pointer: the purple petal it touches is the section you're on. */
@@ -507,7 +514,7 @@ body::before { background: #F9EBCB; }
 /* Laptop: the letter is a fixed size, so the save-the-date letter is a little more compact. */
 @media (min-width: 900px) {
   .sec-home { gap: 10px; align-content: start; }
-  .sec-home .hero-clip { width: 156px; }
+  .sec-home .hero-clip { width: 196px; }
   .sec-home .names { width: min(100%, 300px); margin: 0; }
   .sec-home .lede { font-size: 0.9375rem; line-height: 1.5; }
   .sec-home .eyebrow { font-size: 1rem; }
