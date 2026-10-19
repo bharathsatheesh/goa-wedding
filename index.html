@@ -328,13 +328,7 @@ body::before { background: #F9EBCB; }
   body { background-image: linear-gradient(rgba(52, 145, 152, .40), rgba(52, 145, 152, .40)), url(img/bokeh-desk.webp); background-attachment: fixed; }
   .stage { inset: 0; }
   .nav { top: calc(var(--gmid) - var(--grp) / 2); bottom: auto; }
-  .nav ul {
-    justify-content: center; width: fit-content; padding: 0 22px; gap: 6px;
-    height: calc(var(--nav-h) - 8px); margin-top: 4px; border-radius: 999px;
-    background: rgba(84, 58, 8, .2); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-    box-shadow: inset 0 0 0 1px rgba(84, 58, 8, .14), 0 6px 18px rgba(70, 40, 10, .10);
-  }
-  .nav a { padding: 8px 10px; }
+  .nav ul { justify-content: center; padding: 0; }
   .stage .comp { top: calc(var(--gmid) + (var(--nav-h) + 12px) / 2); }
   /* A softly darkened doorway arch frames the nav, the mandala and the letter. */
   .arch {
@@ -555,6 +549,15 @@ body::before { background: #F9EBCB; }
 @media (prefers-reduced-motion: reduce) {
   .flap, .letter, .letter.tucked { transition: none; }
   .split .ch { transform: none; transition-property: opacity; }
+}
+
+/* Laptop with a mouse: the cursor is a little mandala everywhere (text fields keep the text caret). */
+@media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+  *, *::before, *::after {
+    cursor: url(img/mandala-cursor-32.png) 16 16, auto !important;
+    cursor: image-set(url(img/mandala-cursor-32.png) 1x, url(img/mandala-cursor-64.png) 2x) 16 16, auto !important;
+  }
+  input:not([type=radio]):not([type=checkbox]):not([type=submit]):not([type=button]), textarea { cursor: text !important; }
 }
 
 /* ---------- phones: the mandala becomes a half-dial along the bottom ---------- */
