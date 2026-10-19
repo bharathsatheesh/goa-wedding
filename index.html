@@ -8,15 +8,15 @@
 <meta name="description" content="Join us in Goa, India · 30–31 March 2027. RSVP with your personal link.">
 <meta property="og:title" content="Anushri &amp; Bharath · Goa, March 2027">
 <meta property="og:description" content="Join us in Goa, India · 30–31 March 2027. Tap to RSVP.">
-<meta property="og:image" content="https://bharathsatheesh.github.io/goa-wedding/img/og-home.jpg">
-<meta property="og:image:alt" content="Save the date: Anushri &amp; Bharath, 30–31 March 2027, Morjim, North Goa">
+<meta property="og:image" content="https://bharathsatheesh.github.io/goa-wedding/img/og.jpg">
+<meta property="og:image:alt" content="Save the date: Anushri &amp; Bharath. Join us in Goa, India">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://bharathsatheesh.github.io/goa-wedding/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Anushri &amp; Bharath">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://bharathsatheesh.github.io/goa-wedding/img/og-home.jpg">
+<meta name="twitter:image" content="https://bharathsatheesh.github.io/goa-wedding/img/og.jpg">
 <meta name="theme-color" content="#F9EBCB">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -323,7 +323,7 @@ body::before { background: #F9EBCB; }
 /* Laptop: the nav sits just above the mandala and envelope, and the three are centred as one group. */
 @media (min-width: 900px) {
   /* Softer bokeh behind everything. */
-  body { background-image: linear-gradient(rgba(249, 236, 208, .62), rgba(249, 236, 208, .62)), url(img/bokeh.webp); }
+  body { background-image: linear-gradient(rgba(249, 236, 208, .28), rgba(249, 236, 208, .28)), url(img/bokeh.webp); }
   .stage { inset: 0; }
   .nav { top: max(0px, calc(50% - (var(--desk-h) * var(--fit, 1) + var(--nav-h) + 12px) / 2)); bottom: auto; }
   .nav ul { justify-content: center; padding: 0; }
@@ -333,7 +333,7 @@ body::before { background: #F9EBCB; }
     position: fixed; z-index: 0; left: 50%; translate: -50% 0; pointer-events: none;
     --grp: calc(var(--desk-h) * var(--fit, 1) + var(--nav-h) + 12px);
     top: calc(50% - var(--grp) / 2 - 84px * var(--fit, 1));
-    height: calc(var(--grp) + (84px + 34px) * var(--fit, 1));
+    bottom: -80px;
     width: calc((var(--D) * .5 + var(--env-w) + 380px) * var(--fit, 1));
     border-radius: 50% 50% 22px 22px / calc(300px * var(--fit, 1)) calc(300px * var(--fit, 1)) 22px 22px;
     background: radial-gradient(120% 80% at 50% 30%, rgba(120, 72, 24, .07), rgba(90, 52, 16, .15));
@@ -519,8 +519,20 @@ body::before { background: #F9EBCB; }
     transform-origin: 50% 100%; transform: rotate(-2.4deg);
   }
   .letter-clip::after { top: 26px; left: 14px; right: 2px; background: #FCF7EC; transform: rotate(1.7deg); }
-  .letter.shuffle-out { transform: translate(64%, -2%) rotate(9deg); transition: transform .34s cubic-bezier(.55, 0, .8, .45); }
-  .letter.shuffle-in { transition: transform .5s cubic-bezier(.2, .9, .3, 1.08); }
+  .letter-clip { isolation: isolate; }
+  /* The outgoing sheet: slides out to the right, then tucks in behind the stack and settles as the bottom sheet. */
+  .letter.ghost { pointer-events: none; animation: to-bottom .7s cubic-bezier(.45, .05, .35, 1) forwards; }
+  /* The incoming sheet was the next one down; it lifts up into place. */
+  .letter.from-stack { transform: translate(-.6%, 1.2%) rotate(1.7deg) scale(.985); transition: none; }
+  .letter.lift { transition: transform .55s cubic-bezier(.25, .8, .3, 1); }
+}
+@keyframes to-bottom {
+  0%   { transform: none; z-index: 3; }
+  42%  { transform: translate(68%, -2%) rotate(9deg); z-index: 3; }
+  43%  { transform: translate(68%, -2%) rotate(9deg); z-index: -1; }
+  100% { transform: translate(.5%, 1.4%) rotate(-2.4deg) scale(.985); z-index: -1; opacity: 0; }
+}
+@media (min-width: 900px) {
 }
 
 /* Section titles arrive letter by letter as the letter rises. */
@@ -1191,6 +1203,7 @@ const CONFIG = {
   /* ---------- turning ---------- */
   function animateTo(target, ms) {
     cancelAnimationFrame(anim);
+    if (!reduce.matches) showLetter(mod(Math.round(target)));   // the letter moves as the mandala starts turning
     if (reduce.matches) { p = target; render(); return settle(); }
     const from = p, start = performance.now(), dur = ms || 560;
     const ease = (t) => 1 - Math.pow(1 - t, 3);
@@ -1345,13 +1358,24 @@ const CONFIG = {
       letter.classList.remove('tucked');    // the letter rises out
       await wait(660);
     } else if (!narrow.matches) {
-      letter.classList.add('shuffle-out');  // laptop: the top sheet slides out to the side…
-      await wait(340);
+      // Laptop: the top sheet slides out and goes to the bottom of the stack, while the next one lifts up.
+      const ghost = letter.cloneNode(true);
+      ghost.removeAttribute('id');
+      ghost.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
+      ghost.querySelectorAll('[name]').forEach((e) => e.removeAttribute('name'));
+      ghost.setAttribute('aria-hidden', 'true'); ghost.inert = true;
+      ghost.classList.remove('tucked', 'fade');
+      clip.appendChild(ghost);
+      ghost.scrollTop = letter.scrollTop;
+      letter.classList.add('from-stack');
       swapTo(want); void letter.offsetWidth;
-      letter.classList.add('shuffle-in');
-      letter.classList.remove('shuffle-out'); // …and comes back with the next section on it
-      await wait(500);
-      letter.classList.remove('shuffle-in');
+      ghost.classList.add('ghost');
+      letter.classList.add('lift');
+      letter.classList.remove('from-stack');
+      await wait(560);
+      letter.classList.remove('lift');
+      await wait(160);
+      ghost.remove();
     } else {
       letter.classList.add('tucked');       // back into the envelope
       await wait(400);
