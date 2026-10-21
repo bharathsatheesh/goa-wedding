@@ -559,6 +559,7 @@ const CONFIG = {
   const card = document.getElementById('rsvp-card');
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const firstName = (n) => String(n).trim().split(/\s+/)[0];
+  const fullName = (n) => String(n).trim();   // shown to guests exactly as written in the Sheet
   const joinNames = (list) => list.length <= 1 ? (list[0] || '') : list.slice(0, -1).join(', ') + ' & ' + list[list.length - 1];
 
   let state = { code: null, guests: [], note: '', accom: '', v2: false };
@@ -736,7 +737,7 @@ const CONFIG = {
   }
 
   function showForm() {
-    const names = joinNames(state.guests.map((g) => firstName(g.name)));
+    const names = joinNames(state.guests.map((g) => fullName(g.name)));
     const many = state.guests.length > 1;
     const guestsHtml = state.guests.map((g, i) => {
       const yes = g.attending === 'yes';
@@ -750,7 +751,7 @@ const CONFIG = {
       // Anyone who has already said yes has answered the sangeet question too.
       const sangeet = `
         <fieldset class="group"><legend class="field-label">Sangeet <span class="req" aria-hidden="true">*</span></legend>
-          <div class="choices" role="radiogroup" aria-label="Will ${esc(firstName(g.name))} join a sangeet act?">
+          <div class="choices" role="radiogroup" aria-label="Will ${esc(fullName(g.name))} join a sangeet act?">
             <span class="choice"><input type="radio" name="g${i}-perf" id="g${i}-perf-yes" value="yes" ${g.perform ? 'checked' : ''}><label for="g${i}-perf-yes">Count me in for an act</label></span>
             <span class="choice"><input type="radio" name="g${i}-perf" id="g${i}-perf-no" value="no" ${!g.perform && g.attending === 'yes' ? 'checked' : ''}><label for="g${i}-perf-no">I'll cheer from the crowd</label></span>
           </div>
@@ -761,7 +762,7 @@ const CONFIG = {
       return `
       <fieldset class="guest" data-i="${i}">
         <legend>${esc(g.name)}</legend>
-        <div class="choices" role="radiogroup" aria-label="Will ${esc(firstName(g.name))} be there?">
+        <div class="choices" role="radiogroup" aria-label="Will ${esc(fullName(g.name))} be there?">
           <span class="choice"><input type="radio" name="g${i}-att" id="g${i}-yes" value="yes" ${yes ? 'checked' : ''}><label for="g${i}-yes">${many ? 'Coming' : "I'll be there"}</label></span>
           <span class="choice"><input type="radio" name="g${i}-att" id="g${i}-no" value="no" ${g.attending === 'no' ? 'checked' : ''}><label for="g${i}-no">Can't make it</label></span>
         </div>
@@ -808,7 +809,7 @@ const CONFIG = {
   card.addEventListener('animationend', (e) => e.target.classList.remove('wiggle'));
 
   function showDone(justSent) {
-    const names = joinNames(state.guests.map((g) => firstName(g.name)));
+    const names = joinNames(state.guests.map((g) => fullName(g.name)));
     const anyYes = state.guests.some((g) => g.attending === 'yes');
     const items = state.guests.map((g) => {
       let line;
@@ -839,7 +840,7 @@ const CONFIG = {
     for (let i = 0; i < state.guests.length; i++) {
       const g = state.guests[i];
       const att = (card.querySelector(`input[name="g${i}-att"]:checked`) || {}).value || '';
-      if (!att) return fail(`Let us know whether ${firstName(g.name)} can come.`);
+      if (!att) return fail(`Let us know whether ${fullName(g.name)} can come.`);
       // One overall answer: coming means coming to everything.
       const events = att === 'yes' ? allEvents() : {};
       const perf = (card.querySelector(`input[name="g${i}-perf"]:checked`) || {}).value || '';
@@ -850,9 +851,9 @@ const CONFIG = {
       }
       const emailEl = document.getElementById(`g${i}-email`);
       out.email = att === 'yes' ? emailEl.value.trim() : (g.email || '');
-      if (att === 'yes' && !out.email) return fail(`Add an email for ${firstName(g.name)} so we can send updates.`);
-      if (out.email && !emailEl.checkValidity()) return fail(`That email for ${firstName(g.name)} doesn't look right.`);
-      if (att === 'yes' && !perf) return fail(`Let us know if ${firstName(g.name)} would like to be in a sangeet act.`);
+      if (att === 'yes' && !out.email) return fail(`Add an email for ${fullName(g.name)} so we can send updates.`);
+      if (out.email && !emailEl.checkValidity()) return fail(`That email for ${fullName(g.name)} doesn't look right.`);
+      if (att === 'yes' && !perf) return fail(`Let us know if ${fullName(g.name)} would like to be in a sangeet act.`);
       guests.push(out);
     }
     const note = document.getElementById('note').value.trim();
