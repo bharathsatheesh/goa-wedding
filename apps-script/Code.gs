@@ -16,9 +16,28 @@ const EVENTS = [
   { id: 'wedding', header: 'Wedding' },
 ];
 
-const MESSAGE_TEMPLATE =
-  "Hi {names}! We can't wait to celebrate with you in Goa. " +
-  "Here's your personal RSVP link: {link}";
+// Invite wording. {names} = the names on that link exactly as written in the Name column.
+// Households starting "Anushri's friends" / "Bharath's friends" get the friends version
+// (written as that person); everyone else gets the family version.
+const MESSAGE_FAMILY =
+  "Hi {names}! Anushri & Bharath are getting married in Goa 30–31 March 2027. " +
+  "They're doing a very intimate ceremony and would love to have you join in the celebration! " +
+  "Please RSVP here by Nov 15th: {link}\n\n" +
+  "Bring your best outfits, your dancing shoes, and all your north-south rivalry myths.";
+const MESSAGE_FRIENDS =
+  "Hi {names}! {partner} & I are getting married in Goa 30–31 March 2027. " +
+  "We're doing a very intimate ceremony and would love to have you join in the celebration! " +
+  "Please RSVP here by Nov 15th: {link}\n\n" +
+  "Bring your best outfits, your dancing shoes, and all your north-south rivalry myths.";
+
+function messageFor_(household, names, link) {
+  const hh = String(household).trim().toLowerCase();
+  let partner = '';
+  if (hh.indexOf("anushri's friends") === 0) partner = 'Bharath';
+  if (hh.indexOf("bharath's friends") === 0) partner = 'Anushri';
+  const tpl = partner ? MESSAGE_FRIENDS.replace('{partner}', partner) : MESSAGE_FAMILY;
+  return tpl.replace('{names}', joinNames_(names)).replace('{link}', link);
+}
 
 // ── Sheet layout (don't rename these headers) ──────────────────────────────
 const SHEET = 'Guests';
@@ -85,7 +104,11 @@ function setup() {
   onOpen();
 }
 
-/** Gives every named guest a code, a link and (on the first row of each household) a message. */
+/**
+ * Gives every named guest without a code a code and a link, and writes a message on the first row
+ * of each household whose Message cell is empty. Existing codes and messages are never changed,
+ * so hand-edited messages are safe. To regenerate a message, clear its cell and run this again.
+ */
 function createLinks() {
   const sh = sheet_();
   const t = table_(sh);
@@ -117,12 +140,14 @@ function createLinks() {
     if (!code) { links.push(['']); messages.push(['']); return; }
     const link = base + '?g=' + code;
     links.push([link]);
-    if (seen[code]) { messages.push(['']); return; }
+    const current = String(r[t.c.message] == null ? '' : r[t.c.message]);
+    if (seen[code]) { messages.push([current]); return; }
     seen[code] = true;
-    const firsts = t.rows
+    if (current.trim()) { messages.push([current]); return; }
+    const names = t.rows
       .filter(function (_, j) { return codes[j] === code; })
-      .map(function (x) { return firstName_(x[t.c.name]); });
-    messages.push([MESSAGE_TEMPLATE.replace('{names}', joinNames_(firsts)).replace('{link}', link)]);
+      .map(function (x) { return String(x[t.c.name]).trim(); });
+    messages.push([messageFor_(r[t.c.household], names, link)]);
   });
   if (!t.rows.length) return;
   sh.getRange(2, t.c.code + 1, t.rows.length, 1).setValues(codes.map(function (c) { return [c]; }));

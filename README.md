@@ -23,8 +23,14 @@ The repo is public, so guest names live only in the Sheet and never in this repo
    - If **Anyone** isn't offered, your organisation's account blocks it. Make a copy of the Sheet in a personal Gmail account (**File → Make a copy**) and repeat from step 1 there.
 4. Paste that URL into `CONFIG.apiUrl` in `index.html`.
 
-## Adding guests
-In **Guests**, fill in **Name**, and optionally **Household**. Then use **Wedding RSVP → Create links** in the Sheet's menu. That fills in **Code**, **Link** and a ready-to-paste **Message** (on the first row of each household). Codes never change once made, so it's safe to re-run whenever you add people. The **Summary** tab keeps live counts.
+## Editing the guest list (no code needed)
+Everything lives in the **Guests** tab, and the site reads it live.
+- **Rename someone:** edit their **Name**. The RSVP form greets them exactly as written. If their invite message uses the old name, clear their **Message** cell and run **Wedding RSVP → Create links**.
+- **Add someone:** fill in **Name** and **Household**, then run **Wedding RSVP → Create links**. People with the same Household share one link.
+- **Split a pair:** give one person a new Household (e.g. "Anushri's friends · Marissa"), clear their **Code**, **Link** and **Message**, clear the other person's **Message** too, then run **Create links**.
+- **Remove someone:** delete their row.
+
+**Create links** only fills empty cells: existing codes and hand-edited messages are never changed. Households starting "Anushri's friends" or "Bharath's friends" get the friends wording ("Bharath & I…" / "Anushri & I…"); everyone else gets the family wording. The **Summary** tab keeps live counts.
 
 ## Common edits
 - **Event times, RSVP date, wording:** `CONFIG` in `src/content.html`, then rebuild `index.html`. Event `id`s must stay in sync with `EVENTS` in `Code.gs`.
