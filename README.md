@@ -24,13 +24,14 @@ The repo is public, so guest names live only in the Sheet and never in this repo
 4. Paste that URL into `CONFIG.apiUrl` in `index.html`.
 
 ## Editing the guest list (no code needed)
-Everything lives in the **Guests** tab. The site reads it live, and the Sheet keeps itself tidy as you type:
-- **Rename someone:** edit their **Name**. The RSVP form and their household's invite message update.
-- **Add someone:** type their **Name** and **Household**. They get a code, link and message straight away. Use the same Household as someone else to share their link.
-- **Split a pair:** change one person's **Household** (e.g. "Anushri's friends · Marissa"). They get their own link and message, and the other person's message is updated.
+Everything lives in the **Guests** tab, and the site reads it live.
+- **Add someone:** type their **Name** and **Household**. Start the Household with whose side they're on, then a dot and a label: "Anushri's friends · Mallika". People with exactly the same Household share one link; give each person their own label if they should RSVP separately.
+- **Rename someone:** edit their **Name**. Their invite and the RSVP form update.
+- **Split a pair:** change one person's **Household** to a new label. They get their own link.
 - **Remove someone:** delete their row.
+- **Reword one invite:** type over its **Message** cell. Clear the cell to get the standard message back.
 
-Messages someone has edited by hand are never overwritten (a notice pops up instead); clear the cell to get a fresh one. Households starting "Anushri's friends" or "Bharath's friends" get the friends wording; everyone else gets the family wording. **Wedding RSVP → Create links** fills in anything missing after a big paste. The **Summary** tab keeps live counts.
+**Link** and **Message** are formulas that read their own row, so deleting, moving or sorting rows can't put a link or message on the wrong person. The script only gives new guests or households a **Code**. If something looks off, use **Wedding RSVP → Fix links & messages**. Please don't type in **Code** or **Link**, or rename the column headings. The **Summary** tab keeps live counts.
 
 ## Common edits
 - **Event times, RSVP date, wording:** `CONFIG` in `src/content.html`, then rebuild `index.html`. Event `id`s must stay in sync with `EVENTS` in `Code.gs`.
