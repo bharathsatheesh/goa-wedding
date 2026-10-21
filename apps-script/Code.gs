@@ -155,6 +155,99 @@ function createLinks() {
   sh.getRange(2, t.c.message + 1, t.rows.length, 1).setValues(messages);
 }
 
+// ── Automatic upkeep: runs whenever someone edits the Guests tab by hand ────
+/**
+ * Change a Household  → that person joins that household's link (or gets their own, if it's new),
+ *                       and both households' messages are rewritten.
+ * Type a new Name     → they get a code, a link and a message.
+ * Edit a Name         → their household's message is rewritten.
+ * A message someone has edited by hand is never overwritten; a notice says so instead.
+ * Pasting many cells at once just fills in anything missing (like Create links).
+ */
+function onEdit(e) {
+  if (!e || !e.range) return;
+  const sh = e.range.getSheet();
+  if (sh.getName() !== SHEET || e.range.getRow() < 2) return;
+  const t = table_(sh);
+  const c0 = e.range.getColumn() - 1;
+  const touches = function (k) { return t.c[k] >= c0 && t.c[k] < c0 + e.range.getNumColumns(); };
+  if (!touches('household') && !touches('name')) return;
+  if (e.range.getNumRows() > 1 || e.range.getNumColumns() > 1) { createLinks(); return; }
+
+  const i = e.range.getRow() - 2;
+  if (i >= t.rows.length) return;
+  const field = c0 === t.c.household ? 'household' : 'name';
+  const oldValue = e.oldValue == null ? '' : String(e.oldValue);
+  const notes = sync_(sh, t, i, field, oldValue);
+  if (notes.length) SpreadsheetApp.getActiveSpreadsheet().toast(notes.join('\n'), 'Wedding RSVP', 8);
+}
+
+/** Updates codes, links and messages after row i's `field` changed from `oldValue`. Returns notices. */
+function sync_(sh, t, i, field, oldValue) {
+  const n = t.rows.length;
+  const get = function (k) { return t.rows.map(function (r) { return String(r[t.c[k]] == null ? '' : r[t.c[k]]).trim(); }); };
+  const hh = get('household'), names = get('name');
+  const msgs = t.rows.map(function (r) { return String(r[t.c.message] == null ? '' : r[t.c.message]); });
+  const codes = t.rows.map(function (r) { return normCode_(r[t.c.code]); });
+  const before = { hh: hh.slice(), names: names.slice(), codes: codes.slice() };
+  before[field === 'household' ? 'hh' : 'names'][i] = oldValue.trim();
+
+  const taken = {};
+  codes.forEach(function (c) { if (c) taken[c] = true; });
+  const fresh = function () { let c; do { c = newCode_(); } while (taken[c]); taken[c] = true; return c; };
+  const others = function (pred) { for (let j = 0; j < n; j++) if (j !== i && pred(j)) return j; return -1; };
+
+  // 1. Work out row i's code.
+  if (!names[i]) {
+    codes[i] = before.codes[i];                              // a blank name keeps its row as is
+  } else if (field === 'household' || !codes[i]) {
+    const join = hh[i] ? others(function (j) { return hh[j] === hh[i] && codes[j]; }) : -1;
+    if (join >= 0) codes[i] = codes[join];                   // joined an existing household
+    else if (!codes[i] || others(function (j) { return codes[j] === codes[i]; }) >= 0) codes[i] = fresh();
+  }
+
+  // 2. Rewrite the message for each link this touched, unless it was edited by hand.
+  const base = SITE_URL.replace(/\/?$/, '/');
+  const link = function (c) { return base + '?g=' + c; };
+  const rowsOf = function (list, c) { const out = []; list.forEach(function (x, j) { if (x === c) out.push(j); }); return out; };
+  const notes = [];
+  const writes = {};                                          // row → new message
+  const affected = [before.codes[i], codes[i]].filter(function (c, k, a) { return c && a.indexOf(c) === k; });
+  affected.forEach(function (c) {
+    const was = rowsOf(before.codes, c), now = rowsOf(codes, c);
+    if (was.length) {
+      const first = was[0];
+      const expected = messageFor_(before.hh[first], was.map(function (j) { return before.names[j]; }), link(c));
+      if (msgs[first].trim() && msgs[first] !== expected) {
+        notes.push('Left the message for ' + joinNames_(now.map(function (j) { return names[j]; })) +
+          ' alone because it was edited by hand. Clear it to get a fresh one.');
+        return;
+      }
+      if (!(first in writes)) writes[first] = '';
+    }
+    if (now.length) writes[now[0]] = messageFor_(hh[now[0]], now.map(function (j) { return names[j]; }), link(c));
+  });
+
+  // 3. Save.
+  if (codes[i] !== before.codes[i]) {
+    sh.getRange(i + 2, t.c.code + 1).setValue(codes[i]);
+    sh.getRange(i + 2, t.c.link + 1).setValue(codes[i] ? link(codes[i]) : '');
+    const mates = rowsOf(codes, codes[i]).filter(function (j) { return j !== i; }).map(function (j) { return names[j]; });
+    if (codes[i] && before.codes[i]) notes.push(mates.length
+      ? names[i] + ' now shares a link with ' + joinNames_(mates) + '.'
+      : names[i] + ' now has their own link: ' + link(codes[i]));
+    const sentCol = t.header ? t.header.indexOf('Invite sent') : -1;
+    if (before.codes[i] && sentCol >= 0 && t.rows[i][sentCol] === true) {
+      notes.push(names[i] + "'s invite was already sent with the old link. Send them the new one.");
+    }
+  }
+  Object.keys(writes).forEach(function (j) {
+    j = Number(j);
+    if (writes[j] !== msgs[j]) sh.getRange(j + 2, t.c.message + 1).setValue(writes[j]);
+  });
+  return notes;
+}
+
 // ── Web app: the site calls these ──────────────────────────────────────────
 /** GET ?code=ABC123 → the names on that link and any answers already saved. */
 function doGet(e) {
@@ -253,7 +346,7 @@ function table_(sh) {
   EVENTS.forEach(function (ev) { c[ev.id] = header.indexOf(ev.header); });
   const missing = Object.keys(c).filter(function (k) { return c[k] < 0; });
   if (missing.length) throw new Error('Guests tab is missing columns: ' + missing.join(', '));
-  return { c: c, rows: values.slice(1) };
+  return { c: c, rows: values.slice(1), header: header };
 }
 
 function json_(obj) {

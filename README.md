@@ -24,13 +24,13 @@ The repo is public, so guest names live only in the Sheet and never in this repo
 4. Paste that URL into `CONFIG.apiUrl` in `index.html`.
 
 ## Editing the guest list (no code needed)
-Everything lives in the **Guests** tab, and the site reads it live.
-- **Rename someone:** edit their **Name**. The RSVP form greets them exactly as written. If their invite message uses the old name, clear their **Message** cell and run **Wedding RSVP → Create links**.
-- **Add someone:** fill in **Name** and **Household**, then run **Wedding RSVP → Create links**. People with the same Household share one link.
-- **Split a pair:** give one person a new Household (e.g. "Anushri's friends · Marissa"), clear their **Code**, **Link** and **Message**, clear the other person's **Message** too, then run **Create links**.
+Everything lives in the **Guests** tab. The site reads it live, and the Sheet keeps itself tidy as you type:
+- **Rename someone:** edit their **Name**. The RSVP form and their household's invite message update.
+- **Add someone:** type their **Name** and **Household**. They get a code, link and message straight away. Use the same Household as someone else to share their link.
+- **Split a pair:** change one person's **Household** (e.g. "Anushri's friends · Marissa"). They get their own link and message, and the other person's message is updated.
 - **Remove someone:** delete their row.
 
-**Create links** only fills empty cells: existing codes and hand-edited messages are never changed. Households starting "Anushri's friends" or "Bharath's friends" get the friends wording ("Bharath & I…" / "Anushri & I…"); everyone else gets the family wording. The **Summary** tab keeps live counts.
+Messages someone has edited by hand are never overwritten (a notice pops up instead); clear the cell to get a fresh one. Households starting "Anushri's friends" or "Bharath's friends" get the friends wording; everyone else gets the family wording. **Wedding RSVP → Create links** fills in anything missing after a big paste. The **Summary** tab keeps live counts.
 
 ## Common edits
 - **Event times, RSVP date, wording:** `CONFIG` in `src/content.html`, then rebuild `index.html`. Event `id`s must stay in sync with `EVENTS` in `Code.gs`.
