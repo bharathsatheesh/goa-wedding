@@ -25,7 +25,7 @@ The repo is public, so guest names live only in the Sheet and never in this repo
 
 ## Editing the guest list (no code needed)
 Everything lives in the **Guests** tab, and the site reads it live.
-- **Add someone:** type their **Name** and **Household**. Start the Household with whose side they're on, then a dot and a label: "Anushri's friends · Mallika". People with exactly the same Household share one link; give each person their own label if they should RSVP separately.
+- **Add someone:** type their **Name** and **Household**. Start the Household with whose side they're on, then a dot and a label: "Anushri's friends · Alex". People with exactly the same Household share one link; give each person their own label if they should RSVP separately.
 - **Rename someone:** edit their **Name**. Their invite and the RSVP form update.
 - **Split a pair:** change one person's **Household** to a new label. They get their own link.
 - **Remove someone:** delete their row.
