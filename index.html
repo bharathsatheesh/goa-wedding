@@ -772,6 +772,11 @@ const CONFIG = {
   // Paste your Apps Script web-app URL (it ends in /exec). Leave '' for preview mode.
   apiUrl: 'https://script.google.com/macros/s/AKfycbyWTksQw9ViambnLZCmaCYj0h5Jo5-Mpj84Db7pbrwgdpy-IT9JNPxQSboKBLSlu-rA/exec',
   rsvpBy: '15 November 2026',
+  // Later RSVP dates for particular links, keyed by the SHA-256 of the link's code
+  // (so codes stay out of this public repo). Hash a code: printf CODE | shasum -a 256
+  rsvpByLink: {
+    'fc25d342cd3d82394a27ee6e25d46b61501dff3398035e90ba7815adf78ce1c5': '25 November 2026',
+  },
   // Asks each guest who's coming for dietary preferences, as pills they can tick.
   askDietary: true,
   diets: ['Vegetarian', 'Vegan', 'Jain', 'Gluten-free', 'Lactose intolerant', 'Allergic to nuts'],
@@ -924,7 +929,21 @@ const CONFIG = {
   }
 
   /* ---------- static sections ---------- */
-  document.getElementById('rsvp-by').textContent = 'Please RSVP by ' + CONFIG.rsvpBy + '.';
+  let rsvpBy = CONFIG.rsvpBy;
+  const showRsvpBy = () => {
+    document.getElementById('rsvp-by').textContent = 'Please RSVP by ' + rsvpBy + '.';
+    document.querySelectorAll('[data-rsvp-by]').forEach((el) => { el.textContent = rsvpBy; });
+  };
+  showRsvpBy();
+  (async () => {
+    const code = readCode();
+    if (!code || !CONFIG.rsvpByLink || !window.crypto || !crypto.subtle) return;
+    try {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(code));
+      const hex = Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, '0')).join('');
+      if (CONFIG.rsvpByLink[hex]) { rsvpBy = CONFIG.rsvpByLink[hex]; showRsvpBy(); }
+    } catch (e) { /* keep the default date */ }
+  })();
   document.getElementById('timeline').innerHTML = CONFIG.events.map((e) => `
     <li>
       <div class="when-col"><span class="label">${esc(e.day)}</span><span class="label time">${esc(e.time)}</span></div>
@@ -1070,7 +1089,7 @@ const CONFIG = {
       <ul class="summary">${items}</ul>
       ${state.note ? `<p class="muted"><strong>Your requests and notes:</strong> ${esc(state.note)}</p>` : ''}
       <div class="actions"><button class="btn secondary" type="button" id="edit">Change answers</button></div>
-      <p class="muted">Plans change? Use this same link any time before ${esc(CONFIG.rsvpBy)}.</p>`;
+      <p class="muted">Plans change? Use this same link any time before <span data-rsvp-by>${esc(rsvpBy)}</span>.</p>`;
     document.getElementById('edit').addEventListener('click', () => { showForm(); card.querySelector('input')?.focus(); });
   }
 
